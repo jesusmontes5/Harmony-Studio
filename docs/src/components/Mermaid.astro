@@ -1,0 +1,80 @@
+---
+const { chart, size = "md" } = Astro.props;
+---
+
+<div class="mermaid-frame">
+  <pre class="mermaid-diagram" data-size={size} data-mermaid-chart={chart}>{chart}</pre>
+</div>
+
+<script>
+  import mermaid from "mermaid";
+
+  const renderMermaidDiagrams = async () => {
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "base",
+      securityLevel: "loose",
+      flowchart: {
+        curve: "basis",
+        htmlLabels: true,
+        nodeSpacing: 46,
+        rankSpacing: 54,
+      },
+      class: {
+        useMaxWidth: true,
+      },
+      sequence: {
+        useMaxWidth: true,
+        showSequenceNumbers: false,
+        actorMargin: 56,
+        messageMargin: 42,
+        boxMargin: 12,
+        noteMargin: 12,
+        mirrorActors: false,
+      },
+      themeVariables: {
+        primaryColor: "#fffaf2",
+        primaryTextColor: "#111827",
+        primaryBorderColor: "#c9973e",
+        lineColor: "#9a7228",
+        secondaryColor: "#f7ead2",
+        tertiaryColor: "#ffffff",
+        background: "#fffaf2",
+        mainBkg: "#fffaf2",
+        secondBkg: "#ffffff",
+        actorBkg: "#fffaf2",
+        actorBorder: "#c9973e",
+        actorTextColor: "#111827",
+        actorLineColor: "#9a7228",
+        signalColor: "#111827",
+        signalTextColor: "#111827",
+        labelTextColor: "#111827",
+        textColor: "#111827",
+        noteBkgColor: "#f7ead2",
+        noteTextColor: "#111827",
+        noteBorderColor: "#c9973e",
+      },
+    });
+
+    const diagrams = document.querySelectorAll("[data-mermaid-chart]:not([data-mermaid-rendered])");
+
+    for (const diagram of diagrams) {
+      const chart = diagram.getAttribute("data-mermaid-chart");
+      if (!chart) continue;
+
+      const id = `mermaid-${Math.random().toString(36).slice(2)}`;
+
+      try {
+        const { svg } = await mermaid.render(id, chart);
+        diagram.innerHTML = svg;
+        diagram.setAttribute("data-mermaid-rendered", "true");
+      } catch (error) {
+        console.error("Error renderizando diagrama Mermaid", error);
+        diagram.textContent = chart;
+      }
+    }
+  };
+
+  renderMermaidDiagrams();
+  document.addEventListener("astro:page-load", renderMermaidDiagrams);
+</script>

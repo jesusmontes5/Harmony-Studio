@@ -1,0 +1,41 @@
+---
+title: Diagrama de secuencia
+description: Interaccion entre cliente, frontend, API y base de datos al reservar.
+---
+
+import Mermaid from "../../../components/Mermaid.astro";
+
+# Diagrama de secuencia
+
+<Mermaid size="xl" chart={`sequenceDiagram
+  autonumber
+  actor Cliente
+  participant FE as Frontend React
+  participant SEC as JwtFilter
+  participant AV as AvailabilityController
+  participant AS as AvailabilityService
+  participant RC as ReservaController
+  participant RS as ReservaService
+  participant DB as MySQL
+
+  Cliente->>FE: Selecciona fecha y barbero
+  FE->>SEC: GET /availability
+  SEC->>AV: Peticion autenticada
+  AV->>AS: Calcula huecos disponibles
+  AS->>DB: Consulta horarios, reservas y servicios
+  DB-->>AS: Datos de agenda
+  AS-->>AV: Huecos disponibles
+  AV-->>FE: Lista de horas
+  FE-->>Cliente: Muestra horas
+
+  Cliente->>FE: Confirma reserva
+  FE->>SEC: POST /reservations
+  SEC->>RC: Peticion autenticada
+  RC->>RS: Crear reserva
+  RS->>DB: Valida solapes y guarda
+  DB-->>RS: Reserva guardada
+  RS-->>RC: ReservaDto
+  RC-->>FE: ReservaDto
+  FE-->>Cliente: Confirmacion visual`} />
+
+La secuencia muestra como el frontend nunca calcula la validez final de la reserva por si solo: la API vuelve a validar reglas de negocio antes de persistir.

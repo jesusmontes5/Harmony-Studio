@@ -1,0 +1,122 @@
+---
+title: Diagrama Entidad-Relacion
+description: Modelo relacional de la base de datos MySQL.
+---
+
+import Mermaid from "../../../components/Mermaid.astro";
+
+# Diagrama Entidad-Relacion
+
+<Mermaid chart={`erDiagram
+  USUARIOS {
+    bigint id PK
+    varchar nombre
+    varchar email UK
+    varchar telefono
+    varchar password_hash
+    enum provider
+    enum rol
+    varchar avatar_url
+    boolean activo
+    datetime creado_en
+    datetime actualizado_en
+  }
+
+  SERVICIOS {
+    bigint id PK
+    varchar nombre
+    varchar descripcion
+    int duracion_minutos
+    decimal precio
+    boolean activo
+    datetime creado_en
+    datetime actualizado_en
+  }
+
+  HORARIOS_BARBERO_FECHA {
+    bigint id PK
+    bigint barbero_id FK
+    date fecha
+    time hora_inicio
+    time hora_fin
+  }
+
+  RESERVAS {
+    bigint id PK
+    bigint cliente_id FK
+    bigint barbero_id FK
+    date fecha
+    datetime fecha_inicio
+    datetime fecha_fin
+    enum estado
+    varchar observaciones_cliente
+    text observaciones_barbero
+    varchar motivo_cancelacion
+    decimal precio_total
+    datetime creada_en
+    datetime actualizada_en
+  }
+
+  RESERVA_SERVICIOS {
+    bigint reserva_id PK, FK
+    bigint servicio_id PK, FK
+    decimal precio_aplicado
+    int duracion_aplicada_minutos
+  }
+
+  NOTIFICACIONES {
+    bigint id PK
+    bigint usuario_id FK
+    bigint reserva_id FK
+    enum tipo
+    enum canal
+    varchar mensaje
+    boolean enviada
+    datetime fecha_programada
+    datetime enviada_en
+    varchar error_envio
+  }
+
+  RESENAS {
+    bigint id PK
+    bigint reserva_id FK
+    bigint cliente_id FK
+    bigint barbero_id FK
+    int puntuacion
+    text comentario
+  }
+
+  SOLICITUDES_REGISTRO {
+    bigint id PK
+    varchar nombre
+    varchar email
+    varchar telefono
+    varchar password_hash
+    enum estado
+    varchar motivo_rechazo
+    bigint revisado_por FK
+  }
+
+  TABLON_MENSAJES {
+    bigint id PK
+    bigint autor_id FK
+    varchar titulo
+    text mensaje
+    boolean activo
+  }
+
+  USUARIOS ||--o{ HORARIOS_BARBERO_FECHA : barbero
+  USUARIOS ||--o{ RESERVAS : cliente
+  USUARIOS ||--o{ RESERVAS : barbero
+  RESERVAS ||--o{ RESERVA_SERVICIOS : contiene
+  SERVICIOS ||--o{ RESERVA_SERVICIOS : contratado
+  RESERVAS ||--o{ NOTIFICACIONES : genera
+  USUARIOS ||--o{ NOTIFICACIONES : recibe
+  RESERVAS ||--o| RESENAS : valora
+  USUARIOS ||--o{ RESENAS : escribe_recibe
+  USUARIOS ||--o{ SOLICITUDES_REGISTRO : revisa
+  USUARIOS ||--o{ TABLON_MENSAJES : publica`} />
+
+## Integridad
+
+El esquema incluye claves foraneas, indices para consultas frecuentes y un trigger que valida transiciones de estado en reservas.

@@ -1,0 +1,27 @@
+---
+title: Diagrama de actividades
+description: Flujo principal para crear una reserva.
+---
+
+import Mermaid from "../../../components/Mermaid.astro";
+
+# Diagrama de actividades
+
+<Mermaid chart={`flowchart TD
+  A[Cliente inicia sesion] --> B[Accede a Reservas]
+  B --> C[Selecciona barbero]
+  C --> D[Selecciona fecha]
+  D --> E[Frontend solicita disponibilidad]
+  E --> F{Hay huecos disponibles?}
+  F -- No --> G[Muestra aviso sin disponibilidad]
+  F -- Si --> H[Cliente selecciona servicios]
+  H --> I[Cliente selecciona hora]
+  I --> J[Confirma reserva]
+  J --> K[Backend valida cliente, horario y solapes]
+  K --> L{Reserva valida?}
+  L -- No --> M[Devuelve error de negocio]
+  L -- Si --> N[Guarda reserva y servicios]
+  N --> O[Programa notificaciones]
+  O --> P[Muestra reserva activa]`} />
+
+Este flujo refleja el caso principal del cliente: crear una reserva desde la disponibilidad real del barbero.

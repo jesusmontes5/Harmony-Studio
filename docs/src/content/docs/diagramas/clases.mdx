@@ -1,0 +1,39 @@
+---
+title: Diagrama de clases
+description: Clases principales del dominio y relaciones.
+---
+
+import Mermaid from "../../../components/Mermaid.astro";
+
+# Diagrama de clases
+
+<Mermaid size="xl" chart={`flowchart LR
+  Cliente["Cliente / Usuario<br/>id<br/>nombre<br/>email<br/>telefono<br/>activo"]
+  Barbero["Barbero / Usuario<br/>id<br/>nombre<br/>email<br/>rol<br/>activo"]
+  Reserva["Reserva<br/>id<br/>fecha<br/>inicio<br/>fin<br/>estado<br/>precioTotal<br/>motivoCancelacion"]
+  Servicio["Servicio<br/>id<br/>nombre<br/>descripcion<br/>duracionMinutos<br/>precio<br/>activo"]
+  ReservaServicio["ReservaServicio<br/>reservaId<br/>servicioId<br/>precioAplicado<br/>duracionAplicada"]
+  Horario["HorarioBarbero<br/>fecha<br/>horaInicio<br/>horaFin"]
+  Resena["Resena<br/>puntuacion<br/>comentario"]
+  Notificacion["Notificacion<br/>tipo<br/>canal<br/>mensaje<br/>enviada<br/>fechaProgramada"]
+  Solicitud["SolicitudRegistro<br/>nombre<br/>email<br/>telefono<br/>estado<br/>motivoRechazo"]
+  Tablon["TablonMensaje<br/>titulo<br/>mensaje<br/>activo"]
+
+  Cliente -->|"solicita 0..*"| Reserva
+  Barbero -->|"atiende 0..*"| Reserva
+  Barbero -->|"configura 0..*"| Horario
+  Reserva -->|"incluye 1..*"| ReservaServicio
+  Servicio -->|"se reserva 0..*"| ReservaServicio
+  Reserva -->|"genera 0..1"| Resena
+  Reserva -->|"programa 0..*"| Notificacion
+  Barbero -->|"revisa 0..*"| Solicitud
+  Barbero -->|"publica 0..*"| Tablon
+
+  classDef entity fill:#fffaf2,stroke:#c9973e,stroke-width:1.4px,color:#111827;
+  classDef user fill:#f7ead2,stroke:#c9973e,stroke-width:1.6px,color:#111827;
+  class Cliente,Barbero user;
+  class Reserva,Servicio,ReservaServicio,Horario,Resena,Notificacion,Solicitud,Tablon entity;`} />
+
+Este diagrama resume las entidades persistentes principales y las relaciones mas importantes del dominio.
+
+Para facilitar la lectura, `Cliente` y `Barbero` representan usuarios con roles distintos dentro de la tabla real `usuarios`.

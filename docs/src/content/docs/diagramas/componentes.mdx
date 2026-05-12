@@ -1,0 +1,54 @@
+---
+title: Diagrama de componentes
+description: Componentes principales de frontend, backend y servicios externos.
+---
+
+import Mermaid from "../../../components/Mermaid.astro";
+
+# Diagrama de componentes
+
+<Mermaid chart={`flowchart TB
+  User[Usuario movil o desktop]
+
+  subgraph Frontend[Frontend React + Vite]
+    Router[React Router]
+    AuthContext[Contexto de autenticacion]
+    UI[Componentes UI]
+    Pages[Paginas lazy-loaded]
+    ApiClient[Axios API Client]
+  end
+
+  subgraph Backend[Backend Spring Boot]
+    Security[Spring Security + JWT]
+    Controllers[Controladores REST]
+    Services[Servicios de negocio]
+    Repositories[Repositorios JPA]
+    Swagger[Swagger/OpenAPI]
+  end
+
+  subgraph Data[Persistencia]
+    MySQL[(MySQL)]
+  end
+
+  subgraph External[Servicios externos]
+    Google[Google OAuth]
+    Mail[Servicio SMTP]
+    Cloudinary[Cloudinary avatars]
+  end
+
+  User --> Router
+  Router --> Pages
+  Pages --> UI
+  Pages --> AuthContext
+  Pages --> ApiClient
+  Pages --> Cloudinary
+  ApiClient --> Security
+  Security --> Controllers
+  Controllers --> Services
+  Services --> Repositories
+  Repositories --> MySQL
+  Controllers --> Swagger
+  Services --> Google
+  Services --> Mail`} />
+
+El frontend esta desacoplado del backend mediante una API REST. El backend concentra la seguridad, reglas de negocio y persistencia.

@@ -1,0 +1,46 @@
+---
+title: Diagrama de despliegue
+description: Nodos necesarios para ejecutar la aplicacion en local o produccion.
+---
+
+import Mermaid from "../../../components/Mermaid.astro";
+
+# Diagrama de despliegue
+
+<Mermaid chart={`flowchart LR
+  Browser[Navegador movil/desktop]
+
+  subgraph HostingFrontend[Hosting frontend]
+    Static[React build estatico]
+  end
+
+  subgraph ServerBackend[Servidor backend]
+    Spring[Spring Boot API]
+    Env[Variables de entorno]
+  end
+
+  subgraph Database[Servidor de base de datos]
+    MySQL[(MySQL)]
+  end
+
+  subgraph External[Servicios externos]
+    Google[Google OAuth]
+    SMTP[SMTP email]
+    Cloudinary[Cloudinary]
+  end
+
+  Browser --> Static
+  Static --> Spring
+  Static --> Cloudinary
+  Spring --> Env
+  Spring --> MySQL
+  Spring --> Google
+  Spring --> SMTP`} />
+
+## Despliegue esperado
+
+- Frontend: build estatico generado con Vite.
+- Backend: jar de Spring Boot con variables de entorno.
+- Base de datos: MySQL con esquema `schema.sql`.
+- Documentacion: sitio Starlight desplegable como aplicacion estatica.
+- Servicios externos: Google OAuth, SMTP opcional y Cloudinary para avatar.

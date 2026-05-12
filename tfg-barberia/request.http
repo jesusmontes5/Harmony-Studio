@@ -1,0 +1,398 @@
+@baseUrl = http://localhost:8080
+
+@adminId = 1
+@barberoId = 2
+@clienteId = 3
+@servicioId = 1
+@reservaId = 1
+@solicitudId = 1
+@mensajeId = 1
+@fecha = 2026-03-10
+
+############################################
+### 1) AUTH
+############################################
+
+### Registro: crea solicitud pendiente
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "Cliente API",
+  "email": "cliente.api@gmail.com",
+  "telefono": "600222333",
+  "password": "Abcd1234"
+}
+
+### Login cliente
+# @name loginCliente
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "cliente@gmail.com",
+  "password": "Abcd1234"
+}
+
+@tokenCliente = {{loginCliente.response.body.accessToken}}
+
+### Login barbero
+# @name loginBarbero
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "barbero@gmail.com",
+  "password": "Abcd1234"
+}
+
+@tokenBarbero = {{loginBarbero.response.body.accessToken}}
+
+### Login admin
+# @name loginAdmin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@gmail.com",
+  "password": "Abcd1234"
+}
+
+@tokenAdmin = {{loginAdmin.response.body.accessToken}}
+
+### Login con Google
+POST {{baseUrl}}/auth/google
+Content-Type: application/json
+
+{
+  "token": "GOOGLE_ID_TOKEN"
+}
+
+### Usuario autenticado
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{tokenCliente}}
+
+############################################
+### 2) USUARIOS
+############################################
+
+### Listar usuarios (ADMIN)
+GET {{baseUrl}}/users
+Authorization: Bearer {{tokenAdmin}}
+
+### Listar usuarios filtrados (ADMIN)
+GET {{baseUrl}}/users?rol=CLIENTE&activo=true&q=cliente
+Authorization: Bearer {{tokenAdmin}}
+
+### Listar barberos activos (PUBLICO)
+GET {{baseUrl}}/users/barbers
+
+### Listar clientes activos (BARBERO/ADMIN)
+GET {{baseUrl}}/users/clients?activo=true
+Authorization: Bearer {{tokenBarbero}}
+
+### Listar clientes bloqueados (BARBERO/ADMIN)
+GET {{baseUrl}}/users/clients?activo=false
+Authorization: Bearer {{tokenBarbero}}
+
+### Buscar clientes (BARBERO/ADMIN)
+GET {{baseUrl}}/users/clients?q=api
+Authorization: Bearer {{tokenBarbero}}
+
+### Bloquear cliente (BARBERO/ADMIN)
+PATCH {{baseUrl}}/users/clients/{{clienteId}}/block
+Authorization: Bearer {{tokenBarbero}}
+
+### Desbloquear cliente (BARBERO/ADMIN)
+PATCH {{baseUrl}}/users/clients/{{clienteId}}/unblock
+Authorization: Bearer {{tokenBarbero}}
+
+### Actualizar usuario por id (ADMIN)
+PATCH {{baseUrl}}/users/{{clienteId}}
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{
+  "nombre": "Cliente Editado",
+  "telefono": "600333444",
+  "rol": "CLIENTE",
+  "activo": true
+}
+
+### Actualizar mi perfil
+PATCH {{baseUrl}}/users/me
+Authorization: Bearer {{tokenCliente}}
+Content-Type: application/json
+
+{
+  "nombre": "Cliente Perfil",
+  "telefono": "600222333",
+  "avatarUrl": "https://example.com/avatar.png"
+}
+
+### Eliminar mi cuenta
+DELETE {{baseUrl}}/users/me
+Authorization: Bearer {{tokenCliente}}
+
+############################################
+### 3) SERVICIOS
+############################################
+
+### Listar servicios activos (PUBLICO)
+GET {{baseUrl}}/services
+
+### Listar servicios incluyendo inactivos (BARBERO/ADMIN)
+GET {{baseUrl}}/services?includeInactive=true
+Authorization: Bearer {{tokenBarbero}}
+
+### Crear servicio (BARBERO/ADMIN)
+POST {{baseUrl}}/services
+Authorization: Bearer {{tokenBarbero}}
+Content-Type: application/json
+
+{
+  "nombre": "Corte + Cejas",
+  "descripcion": "Pack basico",
+  "duracionMinutos": 35,
+  "precio": 16.50
+}
+
+### Editar servicio (BARBERO/ADMIN)
+PATCH {{baseUrl}}/services/{{servicioId}}
+Authorization: Bearer {{tokenBarbero}}
+Content-Type: application/json
+
+{
+  "nombre": "Corte clasico",
+  "descripcion": "Corte tradicional",
+  "duracionMinutos": 30,
+  "precio": 12.00,
+  "activo": true
+}
+
+### Eliminar/inactivar servicio (BARBERO/ADMIN)
+DELETE {{baseUrl}}/services/{{servicioId}}
+Authorization: Bearer {{tokenBarbero}}
+
+############################################
+### 4) HORARIOS Y AGENDA
+############################################
+
+### Ver horario de barbero por fecha (PUBLICO)
+GET {{baseUrl}}/barbers/{{barberoId}}/schedule?fecha={{fecha}}
+
+### Reemplazar horario por fechas (BARBERO self/ADMIN)
+PUT {{baseUrl}}/barbers/{{barberoId}}/schedule
+Authorization: Bearer {{tokenBarbero}}
+Content-Type: application/json
+
+[
+  { "fecha": "2026-03-10", "horaInicio": "09:00:00", "horaFin": "14:00:00" },
+  { "fecha": "2026-03-10", "horaInicio": "16:00:00", "horaFin": "20:00:00" },
+  { "fecha": "2026-03-11", "horaInicio": "09:00:00", "horaFin": "14:00:00" }
+]
+
+### Disponibilidad de un dia (PUBLICO)
+GET {{baseUrl}}/availability?barbero_id={{barberoId}}&fecha={{fecha}}&servicios={{servicioId}}
+
+### Agenda diaria del barbero (BARBERO self/ADMIN)
+GET {{baseUrl}}/barbers/{{barberoId}}/agenda?fecha={{fecha}}
+Authorization: Bearer {{tokenBarbero}}
+
+############################################
+### 5) RESERVAS
+############################################
+
+### Crear reserva con hora (CLIENTE)
+POST {{baseUrl}}/reservations
+Authorization: Bearer {{tokenCliente}}
+Content-Type: application/json
+
+{
+  "barberoId": 2,
+  "fechaInicio": "2026-03-10T10:00:00",
+  "servicios": [
+    { "servicioId": 1 }
+  ],
+  "observacionesCliente": "No muy corto arriba"
+}
+
+### Crear cita pendiente de hora (BARBERO/ADMIN)
+POST {{baseUrl}}/reservations/pending-time
+Authorization: Bearer {{tokenBarbero}}
+Content-Type: application/json
+
+{
+  "clienteId": 3,
+  "fecha": "2026-03-12",
+  "servicioId": 1,
+  "observacionesCliente": "Cita programada por el barbero"
+}
+
+### Listar mis reservas
+GET {{baseUrl}}/reservations
+Authorization: Bearer {{tokenCliente}}
+
+### Listar reservas por estado
+GET {{baseUrl}}/reservations?estado=PENDIENTE
+Authorization: Bearer {{tokenBarbero}}
+
+### Listar reservas por rango y barbero
+GET {{baseUrl}}/reservations?desde=2026-03-01T00:00:00&hasta=2026-03-31T23:59:59&barbero_id={{barberoId}}
+Authorization: Bearer {{tokenBarbero}}
+
+### Obtener reserva por id
+GET {{baseUrl}}/reservations/{{reservaId}}
+Authorization: Bearer {{tokenCliente}}
+
+### Asignar hora a cita pendiente (BARBERO/ADMIN)
+PATCH {{baseUrl}}/reservations/{{reservaId}}/assign-time
+Authorization: Bearer {{tokenBarbero}}
+Content-Type: application/json
+
+{
+  "horaInicio": "12:00:00",
+  "horaFin": "12:30:00"
+}
+
+### Completar reserva (BARBERO/ADMIN)
+PATCH {{baseUrl}}/reservations/{{reservaId}}/status
+Authorization: Bearer {{tokenBarbero}}
+Content-Type: application/json
+
+{
+  "estado": "COMPLETADA",
+  "observacionesBarbero": "Servicio completado correctamente"
+}
+
+### Cancelar reserva
+PATCH {{baseUrl}}/reservations/{{reservaId}}/status
+Authorization: Bearer {{tokenCliente}}
+Content-Type: application/json
+
+{
+  "estado": "CANCELADA",
+  "motivoCancelacion": "No puedo asistir"
+}
+
+### Marcar no presentado y bloquear cliente (BARBERO/ADMIN)
+PATCH {{baseUrl}}/reservations/{{reservaId}}/status
+Authorization: Bearer {{tokenBarbero}}
+Content-Type: application/json
+
+{
+  "estado": "NO_PRESENTADO",
+  "observacionesBarbero": "El cliente no acudio a la cita"
+}
+
+############################################
+### 6) RESENAS
+############################################
+
+### Crear resena (CLIENTE)
+POST {{baseUrl}}/reviews
+Authorization: Bearer {{tokenCliente}}
+Content-Type: application/json
+
+{
+  "reservaId": 1,
+  "puntuacion": 5,
+  "comentario": "Muy buen servicio"
+}
+
+### Listar resenas de barbero (PUBLICO)
+GET {{baseUrl}}/barbers/{{barberoId}}/reviews
+
+############################################
+### 7) SOLICITUDES DE REGISTRO
+############################################
+
+### Listar solicitudes pendientes (BARBERO/ADMIN)
+GET {{baseUrl}}/registration-requests?estado=PENDIENTE
+Authorization: Bearer {{tokenBarbero}}
+
+### Aprobar solicitud como CLIENTE (BARBERO/ADMIN)
+PATCH {{baseUrl}}/registration-requests/{{solicitudId}}/approve
+Authorization: Bearer {{tokenBarbero}}
+Content-Type: application/json
+
+{
+  "rol": "CLIENTE"
+}
+
+### Aprobar solicitud como BARBERO (BARBERO/ADMIN)
+PATCH {{baseUrl}}/registration-requests/{{solicitudId}}/approve
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{
+  "rol": "BARBERO"
+}
+
+### Rechazar solicitud (BARBERO/ADMIN)
+PATCH {{baseUrl}}/registration-requests/{{solicitudId}}/reject
+Authorization: Bearer {{tokenBarbero}}
+Content-Type: application/json
+
+{
+  "motivo": "Datos incompletos"
+}
+
+############################################
+### 8) TABLON DE MENSAJES
+############################################
+
+### Listar mensajes activos (PUBLICO)
+GET {{baseUrl}}/board/messages
+
+### Crear mensaje (BARBERO/ADMIN)
+POST {{baseUrl}}/board/messages
+Authorization: Bearer {{tokenBarbero}}
+Content-Type: application/json
+
+{
+  "titulo": "Horario especial",
+  "mensaje": "Esta semana abrimos tambien el sabado por la manana."
+}
+
+### Actualizar mensaje (BARBERO/ADMIN)
+PATCH {{baseUrl}}/board/messages/{{mensajeId}}
+Authorization: Bearer {{tokenBarbero}}
+Content-Type: application/json
+
+{
+  "titulo": "Horario actualizado",
+  "mensaje": "El sabado abrimos de 09:00 a 14:00."
+}
+
+### Eliminar mensaje (BARBERO/ADMIN)
+DELETE {{baseUrl}}/board/messages/{{mensajeId}}
+Authorization: Bearer {{tokenBarbero}}
+
+############################################
+### 9) NOTIFICACIONES
+############################################
+
+### Listar mis notificaciones
+GET {{baseUrl}}/notifications
+Authorization: Bearer {{tokenCliente}}
+
+### Procesar notificaciones pendientes (ADMIN)
+POST {{baseUrl}}/notifications/process-pending
+Authorization: Bearer {{tokenAdmin}}
+
+############################################
+### 10) ACTUATOR / SWAGGER
+############################################
+
+### Health
+GET {{baseUrl}}/actuator/health
+
+### Info
+GET {{baseUrl}}/actuator/info
+
+### Swagger UI
+GET {{baseUrl}}/swagger-ui.html
+
+### OpenAPI JSON
+GET {{baseUrl}}/v3/api-docs

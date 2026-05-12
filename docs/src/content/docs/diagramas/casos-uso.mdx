@@ -1,0 +1,60 @@
+---
+title: Diagrama de casos de uso
+description: Actores principales y funcionalidades del sistema.
+---
+
+import Mermaid from "../../../components/Mermaid.astro";
+
+# Diagrama de casos de uso
+
+<Mermaid chart={`flowchart LR
+  Cliente([Cliente])
+  Barbero([Barbero])
+  Admin([Administrador])
+  Google([Google OAuth])
+
+  subgraph Sistema[Harmony Studio]
+    UC1[Registrarse]
+    UC2[Iniciar sesion]
+    UC3[Completar perfil]
+    UC4[Consultar disponibilidad]
+    UC5[Crear reserva]
+    UC6[Cancelar reserva]
+    UC7[Publicar resena]
+    UC8[Gestionar horario]
+    UC9[Gestionar reservas del dia]
+    UC10[Aprobar solicitudes]
+    UC11[Gestionar clientes]
+    UC12[Gestionar servicios]
+    UC13[Gestionar tablon]
+    UC14[Consultar panel]
+  end
+
+  Cliente --> UC1
+  Cliente --> UC2
+  Cliente --> UC3
+  Cliente --> UC4
+  Cliente --> UC5
+  Cliente --> UC6
+  Cliente --> UC7
+  Google --> UC2
+
+  Barbero --> UC2
+  Barbero --> UC8
+  Barbero --> UC9
+  Barbero --> UC10
+  Barbero --> UC11
+  Barbero --> UC12
+  Barbero --> UC13
+  Barbero --> UC14
+
+  Admin --> UC10
+  Admin --> UC11
+  Admin --> UC12`} />
+
+## Actores
+
+- **Cliente:** usuario final que reserva y gestiona sus citas.
+- **Barbero:** usuario interno que administra agenda, clientes, servicios y reservas.
+- **Administrador:** rol con capacidad de administracion ampliada.
+- **Google OAuth:** proveedor externo para autenticacion social.
