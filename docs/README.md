@@ -22,6 +22,16 @@ http://localhost:4321
 npm run build
 ```
 
+## Despliegue de la aplicacion
+
+La aplicacion principal esta desplegada en una VM de Azure con Docker Compose:
+
+```text
+http://158.158.2.243/
+```
+
+El sitio Starlight se mantiene como documentacion tecnica dentro de `docs/` y puede desplegarse aparte como sitio estatico si se necesita.
+
 ## Contenido incluido
 
 - Portada creativa.

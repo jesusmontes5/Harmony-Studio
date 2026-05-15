@@ -198,8 +198,8 @@ La documentación interactiva de endpoints está disponible mediante Swagger cua
 ### 1. Clonar el repositorio
 
 ```bash
-git clone PENDIENTE_URL_REPOSITORIO
-cd barberia
+git clone https://github.com/jesusmontes5/Harmony-Studio.git
+cd Harmony-Studio
 ```
 
 ### 2. Crear la base de datos
@@ -337,6 +337,93 @@ cd docs
 npm run build
 ```
 
+### 7. Despliegue en Azure con Docker Compose
+
+El despliegue actual se realiza en una maquina virtual de Azure con Docker Compose. La base de datos no se ejecuta en Docker: se usa Azure Database for MySQL Flexible Server.
+
+Arquitectura de produccion:
+
+```text
+Usuario
+  -> Azure VM: Nginx/front en puerto 80
+      -> /api proxy hacia Spring Boot:8080
+          -> Azure MySQL Flexible Server
+```
+
+Recursos usados:
+
+```text
+Grupo de recursos: rg-harmony-studio-es
+Region: spaincentral
+VM: vm-harmony-studio
+IP publica: http://158.158.2.243
+MySQL: mysql-harmony-studio.mysql.database.azure.com
+Base de datos: tfg_barberia
+```
+
+En la VM se instala Docker, Docker Compose y Git. El repositorio se clona y se crea un archivo `.env` privado a partir de `.env.deploy.example`:
+
+```bash
+git clone https://github.com/jesusmontes5/Harmony-Studio.git
+cd Harmony-Studio
+cp .env.deploy.example .env
+nano .env
+```
+
+Variables principales del despliegue:
+
+```properties
+DB_URL=jdbc:mysql://mysql-harmony-studio.mysql.database.azure.com:3306/tfg_barberia?useUnicode=true&serverTimezone=UTC&useSSL=true
+DB_USER=adminaz
+DB_PASSWORD=replace-with-real-password
+
+JWT_SECRET=replace-with-base64-secret
+JWT_EXPIRATION_MINUTES=15
+
+GOOGLE_CLIENT_ID=replace-with-google-client-id.apps.googleusercontent.com
+APP_CORS_ALLOWED_ORIGINS=http://158.158.2.243
+APP_NOTIFICATIONS_EMAIL_ENABLED=false
+
+VITE_API_URL=/api
+VITE_API_TIMEOUT_MS=15000
+VITE_GOOGLE_CLIENT_ID=replace-with-google-client-id.apps.googleusercontent.com
+VITE_HOME_FEATURED_BARBER_ID=2
+VITE_CLOUDINARY_CLOUD_NAME=replace-with-cloudinary-cloud
+VITE_CLOUDINARY_UPLOAD_PRESET=replace-with-upload-preset
+```
+
+Crear el esquema de base de datos:
+
+```bash
+mysql -h mysql-harmony-studio.mysql.database.azure.com -P 3306 -u adminaz -p --ssl-mode=REQUIRED tfg_barberia < tfg-barberia/src/main/resources/db/mysql/schema.sql
+```
+
+Opcionalmente, cargar datos semilla:
+
+```bash
+mysql -h mysql-harmony-studio.mysql.database.azure.com -P 3306 -u adminaz -p --ssl-mode=REQUIRED tfg_barberia < tfg-barberia/src/main/resources/db/mysql/data.sql
+```
+
+Levantar la aplicacion:
+
+```bash
+sudo docker-compose up --build -d
+sudo docker-compose ps
+```
+
+Actualizar el despliegue despues de cambios:
+
+```bash
+git pull
+sudo docker-compose up --build -d
+```
+
+Ver logs:
+
+```bash
+sudo docker-compose logs -f
+```
+
 ---
 
 ## Guía de uso
@@ -397,11 +484,12 @@ http://localhost:4321
 
 ## Enlaces del proyecto
 
-- Repositorio: `PENDIENTE_URL_REPOSITORIO`
-- Proyecto desplegado: `PENDIENTE_URL_DESPLIEGUE`
-- Documentación Starlight: `PENDIENTE_URL_DOCUMENTACION`
+- Repositorio: https://github.com/jesusmontes5/Harmony-Studio
+- Proyecto desplegado: `http://158.158.2.243/`
+- Documentación Starlight: incluida en `docs/`
 - Figma de la interfaz: https://www.figma.com/design/zjuhzeH3yg0EYXkDpIPaqe/TFG-Barberia?node-id=0-1&t=SqV60CRjlqtlAzrw-1
 - Swagger local: `http://localhost:8080/swagger-ui.html`
+- Health check desplegado: `http://158.158.2.243/api/actuator/health`
 
 ---
 

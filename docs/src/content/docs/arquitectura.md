@@ -58,3 +58,18 @@ La autenticacion se basa en JWT. Spring Security protege endpoints por rol y val
 ## Base de datos
 
 La base de datos MySQL incluye tablas relacionales, claves foraneas, indices y un trigger para validar transiciones de estado de reservas.
+
+## Despliegue
+
+El despliegue actual usa una maquina virtual de Azure con Docker Compose:
+
+- `front`: contenedor Nginx que sirve la build estatica de React y redirige `/api` al backend.
+- `service`: contenedor Spring Boot que expone la API interna en el puerto `8080`.
+- `Azure Database for MySQL Flexible Server`: base de datos externa gestionada por Azure.
+
+La aplicacion publica solo el puerto `80` de la VM. El backend no queda expuesto directamente a internet; se accede mediante el proxy `/api` configurado en Nginx.
+
+```text
+http://158.158.2.243/      -> frontend
+http://158.158.2.243/api   -> backend mediante proxy
+```

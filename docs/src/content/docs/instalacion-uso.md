@@ -83,3 +83,74 @@ Documentacion local:
 ```text
 http://localhost:4321
 ```
+
+## Despliegue en Azure
+
+El despliegue de produccion se realiza con Docker Compose en una maquina virtual de Azure. La base de datos se ejecuta como Azure Database for MySQL Flexible Server.
+
+Recursos actuales:
+
+```text
+Grupo de recursos: rg-harmony-studio-es
+Region: spaincentral
+VM: vm-harmony-studio
+IP publica: http://158.158.2.243
+MySQL Flexible Server: mysql-harmony-studio.mysql.database.azure.com
+Base de datos: tfg_barberia
+```
+
+En la VM:
+
+```bash
+git clone https://github.com/jesusmontes5/Harmony-Studio.git
+cd Harmony-Studio
+cp .env.deploy.example .env
+nano .env
+sudo docker-compose up --build -d
+```
+
+Variables principales del `.env` de produccion:
+
+```properties
+DB_URL=jdbc:mysql://mysql-harmony-studio.mysql.database.azure.com:3306/tfg_barberia?useUnicode=true&serverTimezone=UTC&useSSL=true
+DB_USER=adminaz
+DB_PASSWORD=replace-with-real-password
+JWT_SECRET=replace-with-base64-secret
+GOOGLE_CLIENT_ID=replace-with-google-client-id.apps.googleusercontent.com
+APP_CORS_ALLOWED_ORIGINS=http://158.158.2.243
+APP_NOTIFICATIONS_EMAIL_ENABLED=false
+
+VITE_API_URL=/api
+VITE_API_TIMEOUT_MS=15000
+VITE_GOOGLE_CLIENT_ID=replace-with-google-client-id.apps.googleusercontent.com
+VITE_HOME_FEATURED_BARBER_ID=2
+VITE_CLOUDINARY_CLOUD_NAME=replace-with-cloudinary-cloud
+VITE_CLOUDINARY_UPLOAD_PRESET=replace-with-upload-preset
+```
+
+Actualizar tras cambios:
+
+```bash
+cd Harmony-Studio
+git pull
+sudo docker-compose up --build -d
+```
+
+Comprobaciones:
+
+```bash
+sudo docker-compose ps
+sudo docker-compose logs -f
+```
+
+Aplicacion desplegada:
+
+```text
+http://158.158.2.243/
+```
+
+Health check:
+
+```text
+http://158.158.2.243/api/actuator/health
+```

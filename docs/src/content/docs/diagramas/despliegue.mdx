@@ -10,17 +10,15 @@ import Mermaid from "../../../components/Mermaid.astro";
 <Mermaid chart={`flowchart LR
   Browser[Navegador movil/desktop]
 
-  subgraph HostingFrontend[Hosting frontend]
-    Static[React build estatico]
-  end
-
-  subgraph ServerBackend[Servidor backend]
+  subgraph AzureVM[Azure VM - spaincentral]
+    Nginx[Nginx front puerto 80]
+    Static[React build Vite]
     Spring[Spring Boot API]
-    Env[Variables de entorno]
+    Env[Archivo .env privado]
   end
 
-  subgraph Database[Servidor de base de datos]
-    MySQL[(MySQL)]
+  subgraph AzureDB[Azure Database for MySQL Flexible Server]
+    MySQL[(tfg_barberia)]
   end
 
   subgraph External[Servicios externos]
@@ -29,8 +27,9 @@ import Mermaid from "../../../components/Mermaid.astro";
     Cloudinary[Cloudinary]
   end
 
-  Browser --> Static
-  Static --> Spring
+  Browser --> Nginx
+  Nginx --> Static
+  Nginx -- /api --> Spring
   Static --> Cloudinary
   Spring --> Env
   Spring --> MySQL
@@ -39,8 +38,17 @@ import Mermaid from "../../../components/Mermaid.astro";
 
 ## Despliegue esperado
 
-- Frontend: build estatico generado con Vite.
-- Backend: jar de Spring Boot con variables de entorno.
-- Base de datos: MySQL con esquema `schema.sql`.
+- Frontend: build estatico generado con Vite y servido desde Nginx.
+- Backend: jar de Spring Boot ejecutado en contenedor Docker.
+- Proxy: Nginx reenvia `/api` al contenedor `service:8080`.
+- Base de datos: Azure Database for MySQL Flexible Server con esquema `schema.sql`.
 - Documentacion: sitio Starlight desplegable como aplicacion estatica.
 - Servicios externos: Google OAuth, SMTP opcional y Cloudinary para avatar.
+
+Recursos actuales:
+
+- Grupo de recursos: `rg-harmony-studio-es`.
+- Region: `spaincentral`.
+- VM: `vm-harmony-studio`.
+- URL publica: `http://158.158.2.243/`.
+- MySQL: `mysql-harmony-studio.mysql.database.azure.com`.
