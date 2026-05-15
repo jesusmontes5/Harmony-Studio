@@ -5,9 +5,9 @@
 
 INSERT INTO usuarios (id, nombre, email, telefono, password_hash, provider, rol, activo)
 VALUES
-    (1, 'admin', 'admin@barberia.local', '600000001', '$2a$10$8vnKWH.lMbjuKq2oGUfrvOdbQ0ab0GqTzpjYRs0s3PssZny3E4DHW', 'LOCAL', 'ADMIN', TRUE),
-    (2, 'barbero', 'barbero@barberia.local', '600000002', '$2a$10$8vnKWH.lMbjuKq2oGUfrvOdbQ0ab0GqTzpjYRs0s3PssZny3E4DHW', 'LOCAL', 'BARBERO', TRUE),
-    (3, 'cliente', 'cliente@barberia.local', '600000003', '$2a$10$8vnKWH.lMbjuKq2oGUfrvOdbQ0ab0GqTzpjYRs0s3PssZny3E4DHW', 'LOCAL', 'CLIENTE', TRUE);
+    (1, 'admin', 'admin@gmail.com', '600000001', '$2a$10$8vnKWH.lMbjuKq2oGUfrvOdbQ0ab0GqTzpjYRs0s3PssZny3E4DHW', 'LOCAL', 'ADMIN', TRUE),
+    (2, 'barbero', 'barbero@gmail.com', '600000002', '$2a$10$8vnKWH.lMbjuKq2oGUfrvOdbQ0ab0GqTzpjYRs0s3PssZny3E4DHW', 'LOCAL', 'BARBERO', TRUE),
+    (3, 'cliente', 'cliente@gmail.com', '600000003', '$2a$10$8vnKWH.lMbjuKq2oGUfrvOdbQ0ab0GqTzpjYRs0s3PssZny3E4DHW', 'LOCAL', 'CLIENTE', TRUE);
 
 INSERT INTO servicios (id, nombre, descripcion, duracion_minutos, precio, activo)
 VALUES
