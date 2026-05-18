@@ -34,6 +34,7 @@ import org.vedruna.barberia.modules.servicios.entity.Servicio;
 import org.vedruna.barberia.modules.servicios.service.ServicioService;
 import org.vedruna.barberia.modules.users.entity.RolUsuario;
 import org.vedruna.barberia.modules.users.entity.Usuario;
+import org.vedruna.barberia.modules.users.repository.UsuarioRepository;
 import org.vedruna.barberia.modules.users.service.UsuarioService;
 import org.vedruna.barberia.shared.exception.ConflictException;
 import org.vedruna.barberia.shared.exception.ForbiddenException;
@@ -81,6 +82,9 @@ public class ReservaService {
 
     /** Servicio de usuarios para validar cliente/barbero. */
     private final UsuarioService usuarioService;
+
+    /** Repositorio de usuarios para destinatarios de avisos. */
+    private final UsuarioRepository usuarioRepository;
 
     /** Servicio de servicios para precio y duracion. */
     private final ServicioService servicioService;
@@ -434,6 +438,7 @@ public class ReservaService {
             String msgBarbero = "La reserva " + reserva.getId() + " ha sido cancelada";
             notificacionService.createCancelacion(reserva.getCliente(), reserva, msgCliente);
             notificacionService.createCancelacion(reserva.getBarbero(), reserva, msgBarbero);
+            notifyClientsAboutFreeSlot(reserva);
         }
         return toDtoWithDetails(updated);
     }
@@ -592,6 +597,42 @@ public class ReservaService {
         }
         usuarioService.blockClient(actor, cliente.getId());
         notificacionService.createInfo(cliente, reserva, NO_SHOW_BLOCK_MESSAGE);
+    }
+
+    /**
+     * Avisa a clientes activos cuando una cancelacion libera un hueco reservable.
+     */
+    private void notifyClientsAboutFreeSlot(Reserva reserva) {
+        if (reserva.getFechaInicio() == null || reserva.getFechaFin() == null) {
+            return;
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        if (!reserva.getFechaInicio().isAfter(now.plusHours(CLIENT_CANCEL_MIN_HOURS))) {
+            return;
+        }
+
+        List<ReservaServicio> detalles = reservaServicioRepository.findByReservaId(reserva.getId());
+        String serviciosTexto = detalles.isEmpty()
+            ? "Servicios disponibles"
+            : detalles.stream()
+                .map(line -> line.getServicio().getNombre())
+                .collect(Collectors.joining(", "));
+        String fechaTexto = reserva.getFechaInicio().format(APPOINTMENT_DTF);
+        String horaFinTexto = reserva.getFechaFin().toLocalTime().toString();
+        String barberoNombre = reserva.getBarbero().getNombre();
+
+        String message = String.format(
+            "Se ha quedado libre un hueco en la barberia.\n\nBarbero: %s\nFecha y hora: %s - %s\nServicios aproximados: %s\n\nPuedes entrar en la aplicacion y reservarlo si sigue disponible.",
+            barberoNombre,
+            fechaTexto,
+            horaFinTexto,
+            serviciosTexto
+        );
+
+        usuarioRepository.findByRolInAndActivoTrue(List.of(RolUsuario.CLIENTE)).stream()
+            .filter(cliente -> !cliente.getId().equals(reserva.getCliente().getId()))
+            .forEach(cliente -> notificacionService.createSystemInfoAlways(cliente, message));
     }
 
     /**
