@@ -361,7 +361,15 @@ MySQL: mysql-harmony-studio.mysql.database.azure.com
 Base de datos: tfg_barberia
 ```
 
-En la VM se instala Docker, Docker Compose y Git. El repositorio se clona y se crea un archivo `.env` privado a partir de `.env.deploy.example`:
+En la VM se instala Docker, Docker Compose v2 y Git. En Ubuntu 22.04 se puede instalar Compose v2 con:
+
+```bash
+sudo apt update
+sudo apt install -y docker.io docker-compose-v2 git
+docker compose version
+```
+
+El repositorio se clona y se crea un archivo `.env` privado a partir de `.env.deploy.example`:
 
 ```bash
 git clone https://github.com/jesusmontes5/Harmony-Studio.git
@@ -407,21 +415,21 @@ mysql -h mysql-harmony-studio.mysql.database.azure.com -P 3306 -u adminaz -p --s
 Levantar la aplicacion:
 
 ```bash
-sudo docker-compose up --build -d
-sudo docker-compose ps
+sudo docker compose up --build -d
+sudo docker compose ps
 ```
 
 Actualizar el despliegue despues de cambios:
 
 ```bash
 git pull
-sudo docker-compose up --build -d
+sudo docker compose up --build -d
 ```
 
 Ver logs:
 
 ```bash
-sudo docker-compose logs -f
+sudo docker compose logs -f
 ```
 
 ---

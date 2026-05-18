@@ -102,11 +102,13 @@ Base de datos: tfg_barberia
 En la VM:
 
 ```bash
+sudo apt update
+sudo apt install -y docker.io docker-compose-v2 git
 git clone https://github.com/jesusmontes5/Harmony-Studio.git
 cd Harmony-Studio
 cp .env.deploy.example .env
 nano .env
-sudo docker-compose up --build -d
+sudo docker compose up --build -d
 ```
 
 Variables principales del `.env` de produccion:
@@ -133,14 +135,14 @@ Actualizar tras cambios:
 ```bash
 cd Harmony-Studio
 git pull
-sudo docker-compose up --build -d
+sudo docker compose up --build -d
 ```
 
 Comprobaciones:
 
 ```bash
-sudo docker-compose ps
-sudo docker-compose logs -f
+sudo docker compose ps
+sudo docker compose logs -f
 ```
 
 Aplicacion desplegada:
