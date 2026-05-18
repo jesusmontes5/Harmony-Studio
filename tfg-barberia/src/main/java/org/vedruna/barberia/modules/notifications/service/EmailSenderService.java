@@ -30,7 +30,7 @@ public class EmailSenderService {
     public void send(String to, String subject, String body) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             if (from != null && !from.isBlank()) {
                 helper.setFrom(from);
             }
