@@ -432,6 +432,41 @@ Ver logs:
 sudo docker compose logs -f
 ```
 
+### 8. Frontend en Vercel
+
+El repositorio puede desplegar solo el frontend en Vercel sin separar el backend. Al importar el proyecto en Vercel se debe seleccionar:
+
+```text
+Root Directory: frontend-barberia
+Framework Preset: Vite
+Build Command: npm run build
+Output Directory: dist
+Install Command: npm install
+```
+
+Variables de entorno en Vercel:
+
+```properties
+VITE_API_URL=/api
+VITE_API_TIMEOUT_MS=15000
+VITE_GOOGLE_CLIENT_ID=replace-with-google-client-id.apps.googleusercontent.com
+VITE_HOME_FEATURED_BARBER_ID=2
+VITE_CLOUDINARY_CLOUD_NAME=replace-with-cloudinary-cloud
+VITE_CLOUDINARY_UPLOAD_PRESET=replace-with-upload-preset
+```
+
+El archivo `frontend-barberia/vercel.json` hace de puente:
+
+```text
+https://tu-proyecto.vercel.app/api/*
+  -> http://158.158.2.243/api/*
+```
+
+Cuando Vercel genere el dominio final, hay que añadirlo en:
+
+- Google Cloud Console, como origen autorizado de JavaScript.
+- `.env` de la VM, en `APP_CORS_ALLOWED_ORIGINS`.
+
 ---
 
 ## Guía de uso

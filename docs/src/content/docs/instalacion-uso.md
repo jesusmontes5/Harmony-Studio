@@ -156,3 +156,37 @@ Health check:
 ```text
 http://158.158.2.243/api/actuator/health
 ```
+
+## Frontend en Vercel
+
+El frontend tambien puede desplegarse en Vercel desde el mismo repositorio, seleccionando solo la carpeta `frontend-barberia`.
+
+Configuracion del proyecto en Vercel:
+
+```text
+Root Directory: frontend-barberia
+Framework Preset: Vite
+Build Command: npm run build
+Output Directory: dist
+Install Command: npm install
+```
+
+Variables de entorno:
+
+```properties
+VITE_API_URL=/api
+VITE_API_TIMEOUT_MS=15000
+VITE_GOOGLE_CLIENT_ID=replace-with-google-client-id.apps.googleusercontent.com
+VITE_HOME_FEATURED_BARBER_ID=2
+VITE_CLOUDINARY_CLOUD_NAME=replace-with-cloudinary-cloud
+VITE_CLOUDINARY_UPLOAD_PRESET=replace-with-upload-preset
+```
+
+El archivo `frontend-barberia/vercel.json` redirige las llamadas `/api/*` hacia el backend desplegado en Azure:
+
+```text
+https://tu-proyecto.vercel.app/api/*
+  -> http://158.158.2.243/api/*
+```
+
+Cuando se conozca el dominio final de Vercel, debe anadirse en Google Cloud Console y en `APP_CORS_ALLOWED_ORIGINS` del backend.
