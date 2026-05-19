@@ -28,7 +28,7 @@ DB_USER=root
 DB_PASSWORD=root
 JWT_SECRET=replace-with-base64-secret
 GOOGLE_CLIENT_ID=replace-with-google-client-id.apps.googleusercontent.com
-APP_CORS_ALLOWED_ORIGINS=http://localhost:5173
+APP_CORS_ALLOWED_ORIGINS=http://localhost:5174
 APP_NOTIFICATIONS_EMAIL_ENABLED=false
 ```
 
@@ -56,7 +56,7 @@ npm run dev
 Variables principales:
 
 ```properties
-VITE_API_URL=http://localhost:8080
+VITE_API_URL=/api
 VITE_API_TIMEOUT_MS=15000
 VITE_GOOGLE_CLIENT_ID=replace-with-google-client-id.apps.googleusercontent.com
 VITE_HOME_FEATURED_BARBER_ID=2
@@ -67,7 +67,7 @@ VITE_CLOUDINARY_UPLOAD_PRESET=replace-with-upload-preset
 Frontend local:
 
 ```text
-http://localhost:5173
+http://localhost:5174
 ```
 
 ## Documentacion Starlight
@@ -122,7 +122,12 @@ DB_PASSWORD=replace-with-real-password
 JWT_SECRET=replace-with-base64-secret
 GOOGLE_CLIENT_ID=replace-with-google-client-id.apps.googleusercontent.com
 APP_CORS_ALLOWED_ORIGINS=https://harmony-studio-ivory.vercel.app,http://158.158.2.243
-APP_NOTIFICATIONS_EMAIL_ENABLED=false
+APP_NOTIFICATIONS_EMAIL_ENABLED=true
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=replace-with-gmail-account
+MAIL_PASSWORD=replace-with-gmail-app-password
+MAIL_FROM=replace-with-gmail-account
 
 VITE_API_URL=/api
 VITE_API_TIMEOUT_MS=15000
@@ -131,6 +136,8 @@ VITE_HOME_FEATURED_BARBER_ID=2
 VITE_CLOUDINARY_CLOUD_NAME=replace-with-cloudinary-cloud
 VITE_CLOUDINARY_UPLOAD_PRESET=replace-with-upload-preset
 ```
+
+Si no se quieren enviar correos durante una prueba, `APP_NOTIFICATIONS_EMAIL_ENABLED` puede dejarse en `false`.
 
 Actualizar tras cambios:
 

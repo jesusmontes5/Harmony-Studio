@@ -37,6 +37,12 @@ http://158.158.2.243/
 http://158.158.2.243/api
 ```
 
+Diseno de la interfaz en Figma:
+
+```text
+https://www.figma.com/design/zjuhzeH3yg0EYXkDpIPaqe/TFG-Barberia?node-id=0-1&t=SqV60CRjlqtlAzrw-1
+```
+
 El sitio Starlight se mantiene como documentacion tecnica dentro de `docs/` y puede desplegarse aparte como sitio estatico si se necesita.
 
 ## Contenido incluido
