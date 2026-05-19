@@ -61,15 +61,19 @@ La base de datos MySQL incluye tablas relacionales, claves foraneas, indices y u
 
 ## Despliegue
 
-El despliegue actual usa una maquina virtual de Azure con Docker Compose:
+El despliegue actual usa Vercel para el frontend publico y una maquina virtual de Azure para la API:
 
-- `front`: contenedor Nginx que sirve la build estatica de React y redirige `/api` al backend.
+- `Vercel`: despliega la build estatica de React desde `frontend-barberia`.
+- `frontend-barberia/vercel.json`: redirige `/api/*` hacia la VM de Azure.
 - `service`: contenedor Spring Boot que expone la API interna en el puerto `8080`.
+- `front`: contenedor Nginx en Azure que queda como frontend alternativo y proxy interno.
 - `Azure Database for MySQL Flexible Server`: base de datos externa gestionada por Azure.
 
-La aplicacion publica solo el puerto `80` de la VM. El backend no queda expuesto directamente a internet; se accede mediante el proxy `/api` configurado en Nginx.
+El acceso principal es el dominio HTTPS de Vercel. El backend se consume mediante `/api`, que Vercel redirige hacia la VM.
 
 ```text
-http://158.158.2.243/      -> frontend
-http://158.158.2.243/api   -> backend mediante proxy
+https://harmony-studio-ivory.vercel.app/      -> frontend
+https://harmony-studio-ivory.vercel.app/api   -> backend mediante proxy de Vercel
+http://158.158.2.243/                          -> frontend alternativo en Azure
+http://158.158.2.243/api                       -> backend mediante proxy Nginx
 ```

@@ -10,9 +10,14 @@ import Mermaid from "../../../components/Mermaid.astro";
 <Mermaid chart={`flowchart LR
   Browser[Navegador movil/desktop]
 
+  subgraph Vercel[Vercel]
+    VercelFront[React build Vite]
+    VercelProxy[Rewrite /api]
+  end
+
   subgraph AzureVM[Azure VM - spaincentral]
-    Nginx[Nginx front puerto 80]
-    Static[React build Vite]
+    Nginx[Nginx puerto 80]
+    Static[React build alternativo]
     Spring[Spring Boot API]
     Env[Archivo .env privado]
   end
@@ -27,10 +32,13 @@ import Mermaid from "../../../components/Mermaid.astro";
     Cloudinary[Cloudinary]
   end
 
-  Browser --> Nginx
-  Nginx --> Static
+  Browser --> VercelFront
+  VercelFront -- /api --> VercelProxy
+  VercelProxy --> Nginx
   Nginx -- /api --> Spring
-  Static --> Cloudinary
+  Browser -. acceso alternativo .-> Nginx
+  Nginx --> Static
+  VercelFront --> Cloudinary
   Spring --> Env
   Spring --> MySQL
   Spring --> Google
@@ -38,9 +46,10 @@ import Mermaid from "../../../components/Mermaid.astro";
 
 ## Despliegue esperado
 
-- Frontend: build estatico generado con Vite y servido desde Nginx.
+- Frontend principal: build estatico generado con Vite y desplegado en Vercel.
 - Backend: jar de Spring Boot ejecutado en contenedor Docker.
-- Proxy: Nginx reenvia `/api` al contenedor `service:8080`.
+- Proxy principal: Vercel reenvia `/api/*` hacia la VM de Azure.
+- Proxy alternativo: Nginx reenvia `/api` al contenedor `service:8080`.
 - Base de datos: Azure Database for MySQL Flexible Server con esquema `schema.sql`.
 - Documentacion: sitio Starlight desplegable como aplicacion estatica.
 - Servicios externos: Google OAuth, SMTP opcional y Cloudinary para avatar.
@@ -50,5 +59,7 @@ Recursos actuales:
 - Grupo de recursos: `rg-harmony-studio-es`.
 - Region: `spaincentral`.
 - VM: `vm-harmony-studio`.
-- URL publica: `http://158.158.2.243/`.
+- Frontend publico: `https://harmony-studio-ivory.vercel.app/`.
+- Frontend alternativo en Azure: `http://158.158.2.243/`.
+- API mediante Vercel: `https://harmony-studio-ivory.vercel.app/api`.
 - MySQL: `mysql-harmony-studio.mysql.database.azure.com`.

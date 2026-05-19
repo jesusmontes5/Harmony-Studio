@@ -337,17 +337,22 @@ cd docs
 npm run build
 ```
 
-### 7. Despliegue en Azure con Docker Compose
+### 7. Despliegue en produccion
 
-El despliegue actual se realiza en una maquina virtual de Azure con Docker Compose. La base de datos no se ejecuta en Docker: se usa Azure Database for MySQL Flexible Server.
+El despliegue actual separa el frontend y el backend:
+
+- Frontend principal: Vercel, desplegando solo `frontend-barberia`.
+- Backend/API: maquina virtual de Azure con Docker Compose.
+- Base de datos: Azure Database for MySQL Flexible Server.
 
 Arquitectura de produccion:
 
 ```text
 Usuario
-  -> Azure VM: Nginx/front en puerto 80
-      -> /api proxy hacia Spring Boot:8080
-          -> Azure MySQL Flexible Server
+  -> Vercel: https://harmony-studio-ivory.vercel.app
+      -> /api proxy hacia Azure VM
+          -> Spring Boot:8080
+              -> Azure MySQL Flexible Server
 ```
 
 Recursos usados:
@@ -356,7 +361,9 @@ Recursos usados:
 Grupo de recursos: rg-harmony-studio-es
 Region: spaincentral
 VM: vm-harmony-studio
-IP publica: http://158.158.2.243
+Frontend Vercel: https://harmony-studio-ivory.vercel.app
+Backend/API Azure: http://158.158.2.243/api
+Frontend alternativo en Azure: http://158.158.2.243
 MySQL: mysql-harmony-studio.mysql.database.azure.com
 Base de datos: tfg_barberia
 ```
@@ -389,7 +396,7 @@ JWT_SECRET=replace-with-base64-secret
 JWT_EXPIRATION_MINUTES=15
 
 GOOGLE_CLIENT_ID=replace-with-google-client-id.apps.googleusercontent.com
-APP_CORS_ALLOWED_ORIGINS=http://158.158.2.243
+APP_CORS_ALLOWED_ORIGINS=https://harmony-studio-ivory.vercel.app,http://158.158.2.243
 APP_NOTIFICATIONS_EMAIL_ENABLED=false
 
 VITE_API_URL=/api
@@ -412,7 +419,7 @@ Opcionalmente, cargar datos semilla:
 mysql -h mysql-harmony-studio.mysql.database.azure.com -P 3306 -u adminaz -p --ssl-mode=REQUIRED tfg_barberia < tfg-barberia/src/main/resources/db/mysql/data.sql
 ```
 
-Levantar la aplicacion:
+Levantar los contenedores de Azure:
 
 ```bash
 sudo docker compose up --build -d
@@ -434,7 +441,7 @@ sudo docker compose logs -f
 
 ### 8. Frontend en Vercel
 
-El repositorio puede desplegar solo el frontend en Vercel sin separar el backend. Al importar el proyecto en Vercel se debe seleccionar:
+Vercel despliega solo la carpeta `frontend-barberia` desde el mismo repositorio:
 
 ```text
 Root Directory: frontend-barberia
@@ -455,14 +462,14 @@ VITE_CLOUDINARY_CLOUD_NAME=replace-with-cloudinary-cloud
 VITE_CLOUDINARY_UPLOAD_PRESET=replace-with-upload-preset
 ```
 
-El archivo `frontend-barberia/vercel.json` hace de puente:
+El archivo `frontend-barberia/vercel.json` hace de puente entre Vercel y Azure:
 
 ```text
-https://tu-proyecto.vercel.app/api/*
+https://harmony-studio-ivory.vercel.app/api/*
   -> http://158.158.2.243/api/*
 ```
 
-Cuando Vercel genere el dominio final, hay que añadirlo en:
+Para que Google Login funcione en produccion, el dominio de Vercel debe estar en:
 
 - Google Cloud Console, como origen autorizado de JavaScript.
 - `.env` de la VM, en `APP_CORS_ALLOWED_ORIGINS`.
@@ -528,11 +535,12 @@ http://localhost:4321
 ## Enlaces del proyecto
 
 - Repositorio: https://github.com/jesusmontes5/Harmony-Studio
-- Proyecto desplegado: `http://158.158.2.243/`
+- Proyecto desplegado: `https://harmony-studio-ivory.vercel.app/`
+- Frontend alternativo en Azure: `http://158.158.2.243/`
 - Documentación Starlight: incluida en `docs/`
 - Figma de la interfaz: https://www.figma.com/design/zjuhzeH3yg0EYXkDpIPaqe/TFG-Barberia?node-id=0-1&t=SqV60CRjlqtlAzrw-1
 - Swagger local: `http://localhost:8080/swagger-ui.html`
-- Health check desplegado: `http://158.158.2.243/api/actuator/health`
+- Health check desplegado: `https://harmony-studio-ivory.vercel.app/api/actuator/health`
 
 ---
 

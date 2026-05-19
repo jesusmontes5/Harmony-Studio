@@ -24,10 +24,17 @@ npm run build
 
 ## Despliegue de la aplicacion
 
-La aplicacion principal esta desplegada en una VM de Azure con Docker Compose:
+La aplicacion principal esta desplegada con frontend en Vercel y backend en Azure:
+
+```text
+https://harmony-studio-ivory.vercel.app/
+```
+
+La VM de Azure mantiene la API y un frontend alternativo:
 
 ```text
 http://158.158.2.243/
+http://158.158.2.243/api
 ```
 
 El sitio Starlight se mantiene como documentacion tecnica dentro de `docs/` y puede desplegarse aparte como sitio estatico si se necesita.

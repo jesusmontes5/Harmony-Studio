@@ -84,9 +84,9 @@ Documentacion local:
 http://localhost:4321
 ```
 
-## Despliegue en Azure
+## Despliegue en produccion
 
-El despliegue de produccion se realiza con Docker Compose en una maquina virtual de Azure. La base de datos se ejecuta como Azure Database for MySQL Flexible Server.
+El despliegue de produccion usa Vercel para el frontend publico y Docker Compose en una maquina virtual de Azure para el backend. La base de datos se ejecuta como Azure Database for MySQL Flexible Server.
 
 Recursos actuales:
 
@@ -94,7 +94,9 @@ Recursos actuales:
 Grupo de recursos: rg-harmony-studio-es
 Region: spaincentral
 VM: vm-harmony-studio
-IP publica: http://158.158.2.243
+Frontend Vercel: https://harmony-studio-ivory.vercel.app
+Backend/API Azure: http://158.158.2.243/api
+Frontend alternativo Azure: http://158.158.2.243
 MySQL Flexible Server: mysql-harmony-studio.mysql.database.azure.com
 Base de datos: tfg_barberia
 ```
@@ -119,7 +121,7 @@ DB_USER=adminaz
 DB_PASSWORD=replace-with-real-password
 JWT_SECRET=replace-with-base64-secret
 GOOGLE_CLIENT_ID=replace-with-google-client-id.apps.googleusercontent.com
-APP_CORS_ALLOWED_ORIGINS=http://158.158.2.243
+APP_CORS_ALLOWED_ORIGINS=https://harmony-studio-ivory.vercel.app,http://158.158.2.243
 APP_NOTIFICATIONS_EMAIL_ENABLED=false
 
 VITE_API_URL=/api
@@ -148,18 +150,18 @@ sudo docker compose logs -f
 Aplicacion desplegada:
 
 ```text
-http://158.158.2.243/
+https://harmony-studio-ivory.vercel.app/
 ```
 
 Health check:
 
 ```text
-http://158.158.2.243/api/actuator/health
+https://harmony-studio-ivory.vercel.app/api/actuator/health
 ```
 
 ## Frontend en Vercel
 
-El frontend tambien puede desplegarse en Vercel desde el mismo repositorio, seleccionando solo la carpeta `frontend-barberia`.
+El frontend se despliega en Vercel desde el mismo repositorio, seleccionando solo la carpeta `frontend-barberia`.
 
 Configuracion del proyecto en Vercel:
 
@@ -185,8 +187,8 @@ VITE_CLOUDINARY_UPLOAD_PRESET=replace-with-upload-preset
 El archivo `frontend-barberia/vercel.json` redirige las llamadas `/api/*` hacia el backend desplegado en Azure:
 
 ```text
-https://tu-proyecto.vercel.app/api/*
+https://harmony-studio-ivory.vercel.app/api/*
   -> http://158.158.2.243/api/*
 ```
 
-Cuando se conozca el dominio final de Vercel, debe anadirse en Google Cloud Console y en `APP_CORS_ALLOWED_ORIGINS` del backend.
+El dominio de Vercel debe estar anadido en Google Cloud Console y en `APP_CORS_ALLOWED_ORIGINS` del backend.
