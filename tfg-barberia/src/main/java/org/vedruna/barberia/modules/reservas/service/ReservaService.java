@@ -438,7 +438,7 @@ public class ReservaService {
             String msgBarbero = "La reserva " + reserva.getId() + " ha sido cancelada";
             notificacionService.createCancelacion(reserva.getCliente(), reserva, msgCliente);
             notificacionService.createCancelacion(reserva.getBarbero(), reserva, msgBarbero);
-            notifyClientsAboutFreeSlot(reserva);
+            notifyClientsAboutFreeSlot(reserva, actor);
         }
         return toDtoWithDetails(updated);
     }
@@ -602,7 +602,7 @@ public class ReservaService {
     /**
      * Avisa a clientes activos cuando una cancelacion libera un hueco reservable.
      */
-    private void notifyClientsAboutFreeSlot(Reserva reserva) {
+    private void notifyClientsAboutFreeSlot(Reserva reserva, Usuario actor) {
         if (reserva.getFechaInicio() == null || reserva.getFechaFin() == null) {
             return;
         }
@@ -631,8 +631,25 @@ public class ReservaService {
         );
 
         usuarioRepository.findByRolInAndActivoTrue(List.of(RolUsuario.CLIENTE)).stream()
-            .filter(cliente -> !cliente.getId().equals(reserva.getCliente().getId()))
+            .filter(cliente -> shouldReceiveFreeSlotNotice(cliente, reserva, actor))
             .forEach(cliente -> notificacionService.createSystemInfoAlways(cliente, message));
+    }
+
+    /**
+     * Evita enviar el aviso masivo al afectado directo o al usuario que cancela.
+     */
+    private boolean shouldReceiveFreeSlotNotice(Usuario candidate, Reserva reserva, Usuario actor) {
+        Long candidateId = candidate.getId();
+        if (candidateId == null) {
+            return false;
+        }
+        if (reserva.getCliente() != null && candidateId.equals(reserva.getCliente().getId())) {
+            return false;
+        }
+        if (reserva.getBarbero() != null && candidateId.equals(reserva.getBarbero().getId())) {
+            return false;
+        }
+        return actor == null || !candidateId.equals(actor.getId());
     }
 
     /**
