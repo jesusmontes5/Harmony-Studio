@@ -3,6 +3,7 @@ package org.vedruna.barberia.modules.users.service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.vedruna.barberia.modules.notifications.repository.NotificacionRepository;
@@ -12,6 +13,7 @@ import org.vedruna.barberia.modules.reservas.repository.ReservaRepository;
 import org.vedruna.barberia.modules.schedule.repository.HorarioBarberoRepository;
 import org.vedruna.barberia.modules.tablon.repository.TablonMensajeRepository;
 import org.vedruna.barberia.modules.users.converter.UsuarioConverter;
+import org.vedruna.barberia.modules.users.dto.ChangePasswordRequestDto;
 import org.vedruna.barberia.modules.users.dto.UpdateMyNameRequestDto;
 import org.vedruna.barberia.modules.users.dto.UpdateUsuarioRequestDto;
 import org.vedruna.barberia.modules.users.dto.UsuarioPublicDto;
@@ -22,7 +24,9 @@ import org.vedruna.barberia.modules.users.repository.UsuarioRepository;
 import org.vedruna.barberia.shared.exception.ConflictException;
 import org.vedruna.barberia.shared.exception.ForbiddenException;
 import org.vedruna.barberia.shared.exception.NotFoundException;
+import org.vedruna.barberia.shared.exception.UnauthorizedException;
 import org.vedruna.barberia.shared.exception.ValidationException;
+import org.vedruna.barberia.shared.validation.PasswordStrengthValidator;
 
 /**
  * Servicio de gestión de usuarios para endpoints administrativos.
@@ -56,6 +60,12 @@ public class UsuarioService {
 
     /** Repositorio de solicitudes de registro. */
     private final SolicitudRegistroRepository solicitudRegistroRepository;
+
+    /** Encoder BCrypt de contrasenas. */
+    private final PasswordEncoder passwordEncoder;
+
+    /** Validador de fortaleza de contrasenas. */
+    private final PasswordStrengthValidator passwordStrengthValidator;
 
     /**
      * Busca usuarios con filtros opcionales.
@@ -207,6 +217,32 @@ public class UsuarioService {
         }
         Usuario saved = usuarioRepository.save(actor);
         return usuarioConverter.toPublicDto(saved);
+    }
+
+    /**
+     * Cambia la contrasena del usuario autenticado validando la contrasena actual.
+     */
+    @Transactional
+    public void changeMyPassword(Usuario actor, ChangePasswordRequestDto dto) {
+        log.info("Changing own password for userId={}", actor.getId());
+
+        String currentHash = actor.getPasswordHash();
+        if (currentHash == null || currentHash.isBlank()
+            || !passwordEncoder.matches(dto.getCurrentPassword(), currentHash)) {
+            throw new UnauthorizedException("CURRENT_PASSWORD_INVALID", "La contrasena actual no es correcta");
+        }
+
+        if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
+            throw new ValidationException("PASSWORD_CONFIRMATION_MISMATCH", "Las contrasenas no coinciden");
+        }
+
+        if (passwordEncoder.matches(dto.getNewPassword(), currentHash)) {
+            throw new ValidationException("PASSWORD_REUSED", "La nueva contrasena debe ser distinta a la actual");
+        }
+
+        passwordStrengthValidator.validate(dto.getNewPassword());
+        actor.setPasswordHash(passwordEncoder.encode(dto.getNewPassword()));
+        usuarioRepository.save(actor);
     }
 
     /**

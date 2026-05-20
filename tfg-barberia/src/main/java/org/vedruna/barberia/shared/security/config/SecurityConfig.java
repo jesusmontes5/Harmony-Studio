@@ -69,6 +69,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/availability").permitAll()
                 .requestMatchers(HttpMethod.GET, "/users/barbers").permitAll()
                 .requestMatchers(HttpMethod.PATCH, "/users/me").authenticated()
+                .requestMatchers(HttpMethod.PATCH, "/users/me/password").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/users/me").authenticated()
                 .requestMatchers(HttpMethod.GET, "/users/clients").hasAnyRole("BARBERO", "ADMIN")
                 .requestMatchers(HttpMethod.PATCH, "/users/clients/*/block").hasAnyRole("BARBERO", "ADMIN")

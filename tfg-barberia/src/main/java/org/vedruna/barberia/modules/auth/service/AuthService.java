@@ -111,8 +111,8 @@ public class AuthService {
 
     /**
      * Autentica con token de Google.
-     * Si usuario existe: sincroniza datos de perfil Google y retorna token.
-     * Si usuario no existe: crea solicitud pendiente y lanza excepción.
+     * Si usuario existe: respeta el perfil elegido en la aplicacion y retorna token.
+     * Si usuario no existe: exige registro previo y lanza excepcion.
      * 
      * @param dto Token de identidad de Google verificado
      * @return AuthResponseDto con token JWT y datos del usuario
@@ -122,8 +122,6 @@ public class AuthService {
     public AuthResponseDto googleLogin(GoogleAuthRequestDto dto) {
         GoogleIdToken.Payload payload = googleTokenVerifierService.verifyIdToken(dto.getToken());
         String email = payload.getEmail();
-        String displayName = resolveDisplayName(payload);
-
         Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
         if (usuario == null) {
             if (solicitudRegistroRepository.findByEmailAndEstado(email, EstadoSolicitudRegistro.PENDIENTE).isPresent()) {
@@ -138,7 +136,7 @@ public class AuthService {
             );
         }
 
-        syncGoogleProfile(usuario, payload, displayName);
+        syncGoogleProfile(usuario, payload);
 
         if (!Boolean.TRUE.equals(usuario.getActivo())) {
             throw new UnauthorizedException("INACTIVE_USER", BLOCKED_ACCOUNT_MESSAGE);
@@ -163,38 +161,17 @@ public class AuthService {
     }
 
     /**
-     * Obtiene nombre visible desde token Google con fallback.
-     * Si no existe nombre en el token, usa el email.
-     * 
-     * @param payload Payload del token JWT de Google
-     * @return Nombre a mostrar del usuario
-     */
-    private String resolveDisplayName(GoogleIdToken.Payload payload) {
-        String name = (String) payload.get("name");
-        if (name != null && !name.isBlank()) {
-            return name;
-        }
-        return payload.getEmail();
-    }
-
-    /**
-     * Sincroniza avatar y nombre con datos de perfil Google.
-     * Solo actualiza si los datos de Google son más recientes.
-     * 
+     * Usa el avatar de Google solo si el usuario no tiene uno elegido en la aplicacion.
+     *
      * @param usuario Usuario a actualizar
      * @param payload Payload del token JWT de Google
-     * @param displayName Nombre a mostrar del usuario
      */
-    private void syncGoogleProfile(Usuario usuario, GoogleIdToken.Payload payload, String displayName) {
+    private void syncGoogleProfile(Usuario usuario, GoogleIdToken.Payload payload) {
         boolean dirty = false;
         String picture = (String) payload.get("picture");
 
-        if (picture != null && !picture.isBlank() && !picture.equals(usuario.getAvatarUrl())) {
+        if (picture != null && !picture.isBlank() && (usuario.getAvatarUrl() == null || usuario.getAvatarUrl().isBlank())) {
             usuario.setAvatarUrl(picture);
-            dirty = true;
-        }
-        if (displayName != null && !displayName.isBlank() && !displayName.equals(usuario.getNombre())) {
-            usuario.setNombre(displayName);
             dirty = true;
         }
         if (dirty) {

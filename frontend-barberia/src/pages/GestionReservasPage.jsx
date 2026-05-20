@@ -436,14 +436,23 @@ export function GestionReservasPage({ embedded = false, controlledFecha, onFecha
                             ))}
                           </select>
                         </label>
-                        <PrimaryButton
-                          loading={statusLoading[reserva.id]}
-                          disabled={assignableSlots.length === 0 || !selectedAssignSlots[reserva.id]}
-                          onClick={() => handleAssignTime(reserva)}
-                          className="min-h-12 px-md py-2.5 text-xs lg:w-auto"
-                        >
-                          Asignar
-                        </PrimaryButton>
+                        <div className="flex flex-col gap-2 sm:flex-row lg:flex-col">
+                          <PrimaryButton
+                            loading={statusLoading[reserva.id]}
+                            disabled={assignableSlots.length === 0 || !selectedAssignSlots[reserva.id]}
+                            onClick={() => handleAssignTime(reserva)}
+                            className="min-h-12 px-md py-2.5 text-xs lg:w-auto"
+                          >
+                            Asignar
+                          </PrimaryButton>
+                          <DangerButton
+                            loading={statusLoading[reserva.id]}
+                            onClick={() => handleChangeStatus(reserva, "CANCELADA")}
+                            className="min-h-12 px-md py-2.5 text-xs lg:w-auto"
+                          >
+                            Cancelar
+                          </DangerButton>
+                        </div>
                       </div>
                       {assignableSlots.length === 0 ? (
                         <p className="mt-3 text-sm font-medium text-neutral-text/65">
@@ -577,7 +586,9 @@ export function GestionReservasPage({ embedded = false, controlledFecha, onFecha
                 {cancelTarget.clienteNombre || "Cliente"}
               </h4>
               <p className="mt-1 text-sm font-medium text-neutral-text/70">
-                {formatTime(cancelTarget.fechaInicio)} - {formatTime(cancelTarget.fechaFin)}
+                {cancelTarget.fechaInicio && cancelTarget.fechaFin
+                  ? `${formatTime(cancelTarget.fechaInicio)} - ${formatTime(cancelTarget.fechaFin)}`
+                  : "Cita pendiente de hora"}
               </p>
             </div>
           ) : null}

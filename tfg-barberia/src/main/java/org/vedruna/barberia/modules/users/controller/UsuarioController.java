@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.vedruna.barberia.modules.users.dto.ChangePasswordRequestDto;
 import org.vedruna.barberia.modules.users.dto.UpdateMyNameRequestDto;
 import org.vedruna.barberia.modules.users.dto.UpdateUsuarioRequestDto;
 import org.vedruna.barberia.modules.users.dto.UsuarioPublicDto;
@@ -219,6 +220,31 @@ public class UsuarioController {
                                                            @Valid @RequestBody UpdateMyNameRequestDto dto) {
         log.info("PATCH /users/me by userId={}", actor.getId());
         return ResponseEntity.ok(usuarioService.updateMyName(actor, dto));
+    }
+
+    /**
+     * Cambia la contrasena del usuario autenticado.
+     *
+     * @param actor Usuario autenticado
+     * @param dto Contrasena actual, nueva contrasena y confirmacion
+     * @return 204 No Content si se cambio correctamente
+     */
+    @PatchMapping("/me/password")
+    @Operation(
+        summary = "Cambiar mi contrasena",
+        description = "Permite al usuario autenticado cambiar su contrasena validando la contrasena actual"
+    )
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Contrasena actualizada correctamente"),
+        @ApiResponse(responseCode = "400", description = "Datos invalidos"),
+        @ApiResponse(responseCode = "401", description = "Token no valido o contrasena actual incorrecta")
+    })
+    public ResponseEntity<Void> changeMyPassword(@AuthenticationPrincipal Usuario actor,
+                                                   @Valid @RequestBody ChangePasswordRequestDto dto) {
+        log.info("PATCH /users/me/password by userId={}", actor.getId());
+        usuarioService.changeMyPassword(actor, dto);
+        return ResponseEntity.noContent().build();
     }
 
     /**

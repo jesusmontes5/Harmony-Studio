@@ -22,6 +22,13 @@ export async function updateMyProfile(payload) {
 }
 
 /**
+ * Cambia la contrasena del usuario autenticado.
+ */
+export async function changeMyPassword(payload) {
+  await apiClient.patch("/users/me/password", payload);
+}
+
+/**
  * Lista clientes filtrando por busqueda y estado activo.
  */
 export async function listClients(q = "", activo) {

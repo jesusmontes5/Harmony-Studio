@@ -95,16 +95,16 @@ public class AuthController {
     }
 
     /**
-     * Autentica o registra usuario automáticamente con Google OAuth.
-     * Si el usuario no existe, crea una cuenta automática.
-     * 
+     * Autentica con Google OAuth una cuenta ya aprobada.
+     * Si el email no existe, el usuario debe registrarse primero.
+     *
      * @param dto Token de Google del cliente
      * @return Token JWT y datos del usuario
      */
     @PostMapping("/google")
     @Operation(
         summary = "OAuth con Google",
-        description = "Login/registro automático con token de Google. Crea usuario si no existe."
+        description = "Login con token de Google para usuarios ya registrados y aprobados."
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Autenticación exitosa",

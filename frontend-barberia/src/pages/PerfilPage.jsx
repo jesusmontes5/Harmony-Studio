@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { meRequest } from "../api/authApi";
 import { uploadImageToCloudinary } from "../api/cloudinaryApi";
 import { mapApiError } from "../api/apiClient";
-import { updateMyProfile, deleteMyAccount } from "../api/userApi";
+import { updateMyProfile, deleteMyAccount, changeMyPassword } from "../api/userApi";
 import { useAuth } from "../hooks/useAuth";
 import { Alert } from "../components/ui/Alert";
 import { Button } from "../components/ui/Button";
@@ -85,21 +85,30 @@ export function PerfilPage() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [deleteError, setDeleteError] = useState("");
 
   const [email, setEmail] = useState("");
   const [nombre, setNombre] = useState("");
   const [telefono, setTelefono] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
   const fileInputRef = useRef(null);
 
   useNotificationMessage(error, "error", "No se pudo actualizar el perfil");
   useNotificationMessage(success, "success", "Perfil actualizado");
+  useNotificationMessage(passwordError, "error", "No se pudo cambiar la contrasena");
   useNotificationMessage(deleteError, "error", "No se pudo eliminar la cuenta");
 
   useEffect(() => {
@@ -246,6 +255,76 @@ export function PerfilPage() {
   const handleLogout = async () => {
     logout();
     navigate("/login", { replace: true });
+  };
+
+  /**
+   * Actualiza campos del formulario local de cambio de contrasena.
+   */
+  const handlePasswordFieldChange = (event) => {
+    const { name, value } = event.target;
+    setPasswordForm((current) => ({
+      ...current,
+      [name]: value,
+    }));
+  };
+
+  /**
+   * Limpia el formulario y abre el modal de cambio de contrasena.
+   */
+  const handleOpenPasswordModal = () => {
+    setPasswordError("");
+    setPasswordForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+    setShowPasswordModal(true);
+  };
+
+  /**
+   * Cierra el modal de cambio de contrasena.
+   */
+  const handleClosePasswordModal = () => {
+    if (changingPassword) return;
+    setShowPasswordModal(false);
+  };
+
+  /**
+   * Envia la nueva contrasena al backend.
+   */
+  const handleChangePassword = async (event) => {
+    event.preventDefault();
+    setPasswordError("");
+    setSuccess("");
+
+    if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
+      setPasswordError("Completa todos los campos");
+      return;
+    }
+    if (passwordForm.newPassword.length < 8) {
+      setPasswordError("La nueva contrasena debe tener al menos 8 caracteres");
+      return;
+    }
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordError("Las contrasenas no coinciden");
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      await changeMyPassword(passwordForm);
+      setShowPasswordModal(false);
+      setPasswordForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      setSuccess("Contrasena actualizada correctamente");
+    } catch (err) {
+      setPasswordError(mapApiError(err).message);
+    } finally {
+      setChangingPassword(false);
+    }
   };
 
   /**
@@ -413,6 +492,33 @@ export function PerfilPage() {
               <div className="flex items-start gap-4">
                 <div className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-accent/20 bg-[#fdf4e7]/80">
                   <svg viewBox="0 0 24 24" className="h-5 w-5 text-accent/70" fill="none" aria-hidden="true">
+                    <path d="M7 10V8a5 5 0 0 1 10 0v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    <path d="M6.5 10h11a1.5 1.5 0 0 1 1.5 1.5v6A1.5 1.5 0 0 1 17.5 19h-11A1.5 1.5 0 0 1 5 17.5v-6A1.5 1.5 0 0 1 6.5 10Z" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M12 14v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[0.95rem] font-semibold leading-snug text-primary tracking-tight">Contrasena</p>
+                  <p className="mt-0.5 text-sm leading-snug text-neutral-text/70">Actualiza tu clave de acceso de forma segura.</p>
+                </div>
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleOpenPasswordModal}
+                disabled={saving || uploadingAvatar || changingPassword}
+                className="shrink-0 sm:px-6"
+              >
+                Cambiar contrasena
+              </Button>
+            </div>
+          </div>
+
+          <div className="rounded-[1.125rem] border border-[#e8ddd3]/70 bg-[#fdf9f2] px-6 py-5 shadow-[0_4px_24px_-12px_rgba(17,24,39,0.10)] sm:rounded-[1.25rem] sm:px-8 sm:py-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-4">
+                <div className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-accent/20 bg-[#fdf4e7]/80">
+                  <svg viewBox="0 0 24 24" className="h-5 w-5 text-accent/70" fill="none" aria-hidden="true">
                     <path d="M12 3l-8 4v4c0 5.25 3.4 10.14 8 11.4 4.6-1.26 8-6.15 8-11.4V7l-8-4Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     <path d="M12 9v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                     <circle cx="12" cy="15.5" r="0.75" fill="currentColor" />
@@ -461,6 +567,76 @@ export function PerfilPage() {
           </div>
         </section>
       </div>
+
+      <Modal
+        open={showPasswordModal}
+        title="Cambiar contrasena"
+        onClose={handleClosePasswordModal}
+        footer={
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleClosePasswordModal}
+              disabled={changingPassword}
+              className="w-full rounded-xl border-neutral-border/80 bg-white/90 sm:w-auto"
+            >
+              Cancelar
+            </Button>
+            <PrimaryButton
+              type="submit"
+              form="changePasswordForm"
+              loading={changingPassword}
+              disabled={changingPassword}
+              className="sm:w-auto"
+            >
+              Guardar contrasena
+            </PrimaryButton>
+          </div>
+        }
+      >
+        <form id="changePasswordForm" className="space-y-5" onSubmit={handleChangePassword}>
+          <p className="text-[0.95rem] leading-relaxed text-neutral-text">
+            Introduce tu contrasena actual y elige una nueva. La nueva clave debe tener al menos 8 caracteres e incluir mayuscula, minuscula, numero y caracter especial.
+          </p>
+
+          <Input
+            label="Contrasena actual"
+            type="password"
+            name="currentPassword"
+            value={passwordForm.currentPassword}
+            onChange={handlePasswordFieldChange}
+            autoComplete="current-password"
+            placeholder="Tu contrasena actual"
+            inputClassName={profileInputClass}
+            required
+          />
+          <Input
+            label="Nueva contrasena"
+            type="password"
+            name="newPassword"
+            value={passwordForm.newPassword}
+            onChange={handlePasswordFieldChange}
+            autoComplete="new-password"
+            placeholder="Nueva contrasena"
+            inputClassName={profileInputClass}
+            required
+          />
+          <Input
+            label="Confirmar nueva contrasena"
+            type="password"
+            name="confirmPassword"
+            value={passwordForm.confirmPassword}
+            onChange={handlePasswordFieldChange}
+            autoComplete="new-password"
+            placeholder="Repite la nueva contrasena"
+            inputClassName={profileInputClass}
+            required
+          />
+
+          {passwordError ? <Alert tone="error">{passwordError}</Alert> : null}
+        </form>
+      </Modal>
 
       <Modal
         open={showDeleteConfirm}
