@@ -434,8 +434,34 @@ public class ReservaService {
             blockClientForNoShow(actor, reserva);
         }
         if (dto.getEstado() == EstadoReserva.CANCELADA) {
-            String msgCliente = "Tu reserva " + reserva.getId() + " ha sido cancelada";
-            String msgBarbero = "La reserva " + reserva.getId() + " ha sido cancelada";
+            String serviciosTexto = getServiciosTexto(reserva);
+            String fechaTexto = reserva.getFechaInicio() == null
+                ? "Pendiente de asignar"
+                : reserva.getFechaInicio().format(APPOINTMENT_DTF);
+            String motivo = reserva.getMotivoCancelacion() == null || reserva.getMotivoCancelacion().isBlank()
+                ? "No indicado"
+                : reserva.getMotivoCancelacion();
+
+            String msgCliente = String.format(
+                "Hola %s,\n\nTu reserva ha sido cancelada.\n\nReserva: #%d\nCliente: %s\nBarbero: %s\nFecha y hora: %s\nServicios: %s\nMotivo de cancelacion: %s\n\nSi necesitas una nueva cita, puedes volver a reservar desde la aplicacion.",
+                reserva.getCliente().getNombre(),
+                reserva.getId(),
+                reserva.getCliente().getNombre(),
+                reserva.getBarbero().getNombre(),
+                fechaTexto,
+                serviciosTexto,
+                motivo
+            );
+            String msgBarbero = String.format(
+                "La reserva ha sido cancelada.\n\nReserva: #%d\nCliente: %s\nBarbero: %s\nFecha y hora: %s\nServicios: %s\nMotivo de cancelacion: %s\nCancelada por: %s\n\nEl hueco queda liberado si cumple la antelacion minima configurada.",
+                reserva.getId(),
+                reserva.getCliente().getNombre(),
+                reserva.getBarbero().getNombre(),
+                fechaTexto,
+                serviciosTexto,
+                motivo,
+                actor.getNombre()
+            );
             notificacionService.createCancelacion(reserva.getCliente(), reserva, msgCliente);
             notificacionService.createCancelacion(reserva.getBarbero(), reserva, msgBarbero);
             notifyClientsAboutFreeSlot(reserva, actor);
@@ -612,12 +638,7 @@ public class ReservaService {
             return;
         }
 
-        List<ReservaServicio> detalles = reservaServicioRepository.findByReservaId(reserva.getId());
-        String serviciosTexto = detalles.isEmpty()
-            ? "Servicios disponibles"
-            : detalles.stream()
-                .map(line -> line.getServicio().getNombre())
-                .collect(Collectors.joining(", "));
+        String serviciosTexto = getServiciosTexto(reserva);
         String fechaTexto = reserva.getFechaInicio().format(APPOINTMENT_DTF);
         String horaFinTexto = reserva.getFechaFin().toLocalTime().toString();
         String barberoNombre = reserva.getBarbero().getNombre();
@@ -650,6 +671,19 @@ public class ReservaService {
             return false;
         }
         return actor == null || !candidateId.equals(actor.getId());
+    }
+
+    /**
+     * Obtiene los nombres de servicios de una reserva para mensajes al usuario.
+     */
+    private String getServiciosTexto(Reserva reserva) {
+        List<ReservaServicio> detalles = reservaServicioRepository.findByReservaId(reserva.getId());
+        if (detalles.isEmpty()) {
+            return "Servicios disponibles";
+        }
+        return detalles.stream()
+            .map(line -> line.getServicio().getNombre())
+            .collect(Collectors.joining(", "));
     }
 
     /**

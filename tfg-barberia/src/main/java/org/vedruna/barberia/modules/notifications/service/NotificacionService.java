@@ -181,11 +181,37 @@ public class NotificacionService {
      */
     private String buildSubject(Notificacion n) {
         return switch (n.getTipo()) {
-            case INFORMACION -> "Barberia - Confirmacion/Informacion";
-            case CANCELACION -> "Barberia - Reserva cancelada";
-            case RECORDATORIO_DIA -> "Barberia - Recordatorio de tu cita de hoy";
-            case RECORDATORIO_24H -> "Barberia - Recordatorio de tu cita";
+            case INFORMACION -> buildInfoSubject(n.getMensaje());
+            case CANCELACION -> "Harmony Studio - Reserva cancelada";
+            case RECORDATORIO_DIA -> "Harmony Studio - Tu cita es hoy";
+            case RECORDATORIO_24H -> "Harmony Studio - Recordatorio de cita";
         };
+    }
+
+    /**
+     * Afina el asunto de las notificaciones informativas segun el contenido.
+     */
+    private String buildInfoSubject(String mensaje) {
+        String text = mensaje == null ? "" : mensaje.toLowerCase();
+        if (text.contains("hueco") || text.contains("disponible")) {
+            return "Harmony Studio - Hueco disponible";
+        }
+        if (text.contains("solicitud de registro")) {
+            return "Harmony Studio - Nueva solicitud de registro";
+        }
+        if (text.contains("nueva reserva pendiente")) {
+            return "Harmony Studio - Nueva reserva recibida";
+        }
+        if (text.contains("reserva ha sido creada")) {
+            return "Harmony Studio - Reserva confirmada";
+        }
+        if (text.contains("cita ha sido asignada") || text.contains("cita asignada")) {
+            return "Harmony Studio - Cita asignada";
+        }
+        if (text.contains("bloqueada") || text.contains("no presentarte")) {
+            return "Harmony Studio - Aviso importante de cuenta";
+        }
+        return "Harmony Studio - Nueva notificacion";
     }
 
     /**
