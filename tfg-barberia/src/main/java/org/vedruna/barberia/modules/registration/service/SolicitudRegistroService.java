@@ -91,7 +91,7 @@ public class SolicitudRegistroService {
         SolicitudRegistro saved = solicitudRegistroRepository.save(solicitud);
 
         String adminMessage = String.format(
-            "Nueva solicitud de registro pendiente.\n\nSolicitud ID: %d\nNombre: %s\nEmail: %s\nTelefono: %s\n\nRevisa las solicitudes pendientes en la aplicacion.",
+            "Nueva solicitud de registro pendiente en Harmony Studio.\n\nSolicitud ID: %d\nNombre: %s\nEmail: %s\nTelefono: %s\n\nRevisa la solicitud desde el panel de clientes antes de aprobarla o rechazarla.",
             saved.getId(),
             saved.getNombre(),
             saved.getEmail(),
@@ -139,7 +139,7 @@ public class SolicitudRegistroService {
         SolicitudRegistro saved = solicitudRegistroRepository.save(solicitud);
 
         String adminMessage = String.format(
-            "Nueva solicitud de registro con Google pendiente.\n\nSolicitud ID: %d\nNombre: %s\nEmail: %s\nTelefono: %s\n\nRevisa las solicitudes pendientes en la aplicacion.",
+            "Nueva solicitud de registro con Google pendiente en Harmony Studio.\n\nSolicitud ID: %d\nNombre: %s\nEmail: %s\nTelefono: %s\n\nRevisa la solicitud desde el panel de clientes antes de aprobarla o rechazarla.",
             saved.getId(),
             saved.getNombre(),
             saved.getEmail(),

@@ -32,6 +32,9 @@ public class TablonMensajeService {
     /** Formato legible usado para fechas de mensajes en notificaciones. */
     private static final DateTimeFormatter BOARD_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
+    /** Longitud maxima del extracto de anuncio enviado por email. */
+    private static final int ANNOUNCEMENT_EXCERPT_MAX_LENGTH = 160;
+
     /** Repositorio de tablon. */
     private final TablonMensajeRepository tablonMensajeRepository;
 
@@ -150,13 +153,28 @@ public class TablonMensajeService {
         String actorName = actor.getNombre() == null || actor.getNombre().isBlank() ? actor.getEmail() : actor.getNombre();
         String now = LocalDateTime.now().format(BOARD_DATE_FORMAT);
         String message = String.format(
-            "Hay un nuevo anuncio disponible para los clientes de Harmony Studio.\n\nTitulo: %s\nPublicado por: %s\nFecha de publicacion: %s\n\nPuedes consultarlo desde la pagina principal de la aplicacion.",
+            "Harmony Studio ha publicado un nuevo comunicado para sus clientes.\n\nTitulo: %s\nResumen: %s\nPublicado por: %s\nFecha de publicacion: %s\n\nConsulta el comunicado completo desde la pagina principal de la aplicacion.",
             announcement.getTitulo(),
+            normalizeAnnouncementText(announcement.getMensaje()),
             actorName,
             now
         );
 
         activeClients.forEach(client -> notificacionService.createSystemInfoAlways(client, message));
         log.info("New board announcement notified clients={} title={}", activeClients.size(), announcement.getTitulo());
+    }
+
+    /**
+     * Limpia saltos de linea del anuncio para que el email mantenga una ficha compacta.
+     */
+    private String normalizeAnnouncementText(String message) {
+        if (message == null || message.isBlank()) {
+            return "Consulta el detalle completo en la aplicacion.";
+        }
+        String normalized = message.trim().replaceAll("\\s+", " ");
+        if (normalized.length() <= ANNOUNCEMENT_EXCERPT_MAX_LENGTH) {
+            return normalized;
+        }
+        return normalized.substring(0, ANNOUNCEMENT_EXCERPT_MAX_LENGTH - 3).trim() + "...";
     }
 }

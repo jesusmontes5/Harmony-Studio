@@ -193,11 +193,11 @@ public class NotificacionService {
      */
     private String buildInfoSubject(String mensaje) {
         String text = mensaje == null ? "" : mensaje.toLowerCase();
-        if (text.contains("nuevo anuncio")) {
-            return "Harmony Studio - Nuevo anuncio";
+        if (text.contains("nuevo comunicado") || text.contains("nuevo anuncio")) {
+            return "Harmony Studio - Nuevo comunicado";
         }
-        if (text.contains("hueco") || text.contains("disponible")) {
-            return "Harmony Studio - Hueco disponible";
+        if (text.contains("hueco") || text.contains("disponible") || text.contains("franja de agenda")) {
+            return "Harmony Studio - Nueva hora disponible";
         }
         if (text.contains("solicitud de registro")) {
             return "Harmony Studio - Nueva solicitud de registro";
@@ -205,10 +205,10 @@ public class NotificacionService {
         if (text.contains("nueva reserva pendiente")) {
             return "Harmony Studio - Nueva reserva recibida";
         }
-        if (text.contains("reserva ha sido creada")) {
+        if (text.contains("reserva") && text.contains("ha sido creada")) {
             return "Harmony Studio - Reserva confirmada";
         }
-        if (text.contains("cita ha sido asignada") || text.contains("cita asignada")) {
+        if (text.contains("cita ha sido asignada") || text.contains("cita asignada") || text.contains("ya tiene hora asignada")) {
             return "Harmony Studio - Cita asignada";
         }
         if (text.contains("bloqueada") || text.contains("no presentarte")) {

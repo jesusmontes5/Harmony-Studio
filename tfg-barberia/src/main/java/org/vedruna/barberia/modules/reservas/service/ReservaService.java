@@ -59,7 +59,7 @@ public class ReservaService {
 
     /** Aviso persistido al bloquear un cliente por no acudir a una cita. */
     private static final String NO_SHOW_BLOCK_MESSAGE =
-        "Tu cuenta ha sido bloqueada por no presentarte a una cita. Contacta con tu barbero para revisar tu caso.";
+        "Tu cuenta ha sido bloqueada temporalmente por no presentarte a una cita. Contacta con Harmony Studio para revisar tu caso.";
 
     /** Estados finales que no admiten transiciones adicionales. */
     private static final Set<EstadoReserva> ESTADOS_FINALES = EnumSet.of(
@@ -172,7 +172,7 @@ public class ReservaService {
         String fechaTexto = fechaInicio.format(APPOINTMENT_DTF);
 
         String clienteMessage = String.format(
-            "Hola %s,\n\nTu reserva ha sido creada correctamente.\n\nCliente: %s\nBarbero: %s\nFecha y hora: %s\nServicios: %s\nPrecio total: %s EUR\n\nGracias por confiar en la barberia.",
+            "Hola %s,\n\nTu reserva en Harmony Studio ha sido creada correctamente.\n\nCliente: %s\nBarbero: %s\nFecha y hora: %s\nServicios: %s\nPrecio total: %s EUR\n\nGracias por confiar en Harmony Studio.",
             cliente.getNombre(),
             cliente.getNombre(),
             barbero.getNombre(),
@@ -181,7 +181,7 @@ public class ReservaService {
             precioTotal
         );
         String barberoMessage = String.format(
-            "Nueva reserva pendiente.\n\nCliente: %s\nBarbero: %s\nFecha y hora: %s\nServicios: %s\nPrecio total: %s EUR",
+            "Nueva reserva pendiente en tu agenda.\n\nCliente: %s\nBarbero: %s\nFecha y hora: %s\nServicios: %s\nPrecio total: %s EUR",
             cliente.getNombre(),
             barbero.getNombre(),
             fechaTexto,
@@ -190,7 +190,7 @@ public class ReservaService {
         );
         LocalDateTime reminderDateTime = buildSameDayReminderDateTime(fechaInicio);
         String reminderMessage = String.format(
-            "Hola %s,\n\nRecordatorio: hoy tienes una cita en la barberia.\n\nFecha y hora: %s\nBarbero: %s\nServicios: %s\n\nTe esperamos.",
+            "Hola %s,\n\nRecordatorio: hoy tienes una cita en Harmony Studio.\n\nFecha y hora: %s\nBarbero: %s\nServicios: %s\n\nTe esperamos.",
             cliente.getNombre(),
             fechaTexto,
             barbero.getNombre(),
@@ -312,7 +312,7 @@ public class ReservaService {
             .collect(Collectors.joining(", "));
         String fechaTexto = fechaInicio.format(APPOINTMENT_DTF);
         String clienteMessage = String.format(
-            "Hola %s,\n\nTu cita ha sido asignada correctamente.\n\nCliente: %s\nBarbero: %s\nFecha y hora: %s\nServicios: %s\nPrecio total: %s EUR\n\nGracias por confiar en la barberia.",
+            "Hola %s,\n\nTu cita en Harmony Studio ya tiene hora asignada.\n\nCliente: %s\nBarbero: %s\nFecha y hora: %s\nServicios: %s\nPrecio total: %s EUR\n\nGracias por confiar en Harmony Studio.",
             reserva.getCliente().getNombre(),
             reserva.getCliente().getNombre(),
             reserva.getBarbero().getNombre(),
@@ -321,7 +321,7 @@ public class ReservaService {
             reserva.getPrecioTotal()
         );
         String barberoMessage = String.format(
-            "Cita asignada correctamente.\n\nCliente: %s\nBarbero: %s\nFecha y hora: %s\nServicios: %s\nPrecio total: %s EUR",
+            "Cita asignada correctamente en tu agenda.\n\nCliente: %s\nBarbero: %s\nFecha y hora: %s\nServicios: %s\nPrecio total: %s EUR",
             reserva.getCliente().getNombre(),
             reserva.getBarbero().getNombre(),
             fechaTexto,
@@ -329,7 +329,7 @@ public class ReservaService {
             reserva.getPrecioTotal()
         );
         String reminderMessage = String.format(
-            "Hola %s,\n\nRecordatorio: hoy tienes una cita en la barberia.\n\nFecha y hora: %s\nBarbero: %s\nServicios: %s\n\nTe esperamos.",
+            "Hola %s,\n\nRecordatorio: hoy tienes una cita en Harmony Studio.\n\nFecha y hora: %s\nBarbero: %s\nServicios: %s\n\nTe esperamos.",
             reserva.getCliente().getNombre(),
             fechaTexto,
             reserva.getBarbero().getNombre(),
@@ -443,7 +443,7 @@ public class ReservaService {
                 : reserva.getMotivoCancelacion();
 
             String msgCliente = String.format(
-                "Hola %s,\n\nTu reserva ha sido cancelada.\n\nReserva: #%d\nCliente: %s\nBarbero: %s\nFecha y hora: %s\nServicios: %s\nMotivo de cancelacion: %s\n\nSi necesitas una nueva cita, puedes volver a reservar desde la aplicacion.",
+                "Hola %s,\n\nTu reserva en Harmony Studio ha sido cancelada.\n\nReserva: #%d\nCliente: %s\nBarbero: %s\nFecha y hora: %s\nServicios: %s\nMotivo de cancelacion: %s\n\nSi necesitas una nueva cita, puedes volver a reservar desde la aplicacion.",
                 reserva.getCliente().getNombre(),
                 reserva.getId(),
                 reserva.getCliente().getNombre(),
@@ -453,7 +453,7 @@ public class ReservaService {
                 motivo
             );
             String msgBarbero = String.format(
-                "La reserva ha sido cancelada.\n\nReserva: #%d\nCliente: %s\nBarbero: %s\nFecha y hora: %s\nServicios: %s\nMotivo de cancelacion: %s\nCancelada por: %s\n\nEl hueco queda liberado si cumple la antelacion minima configurada.",
+                "Una reserva de tu agenda ha sido cancelada.\n\nReserva: #%d\nCliente: %s\nBarbero: %s\nFecha y hora: %s\nServicios: %s\nMotivo de cancelacion: %s\nCancelada por: %s\n\nLa franja queda liberada si cumple la antelacion minima configurada.",
                 reserva.getId(),
                 reserva.getCliente().getNombre(),
                 reserva.getBarbero().getNombre(),
@@ -644,7 +644,7 @@ public class ReservaService {
         String barberoNombre = reserva.getBarbero().getNombre();
 
         String message = String.format(
-            "Se ha quedado libre un hueco en la barberia.\n\nBarbero: %s\nFecha y hora: %s - %s\nServicios aproximados: %s\n\nPuedes entrar en la aplicacion y reservarlo si sigue disponible.",
+            "Se ha liberado una franja de agenda en Harmony Studio.\n\nBarbero: %s\nFecha y hora: %s - %s\nServicios aproximados: %s\n\nPuedes entrar en la aplicacion y reservarla si sigue disponible.",
             barberoNombre,
             fechaTexto,
             horaFinTexto,

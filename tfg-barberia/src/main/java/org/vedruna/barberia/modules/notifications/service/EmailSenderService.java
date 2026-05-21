@@ -142,7 +142,7 @@ public class EmailSenderService {
                 "#fff1e7",
                 "#9a3412",
                 "Que debes saber",
-                "La reserva ya no figura como activa. Revisa los detalles y, si lo necesitas, vuelve a gestionar una nueva cita desde la aplicacion."
+                "La cita ya no figura como activa. Revisa los detalles y, si necesitas una nueva hora, vuelve a reservar desde la aplicacion."
             );
         }
         if (text.contains("recordatorio")) {
@@ -154,31 +154,31 @@ public class EmailSenderService {
                 "#eaf1ff",
                 "#1d4ed8",
                 "Antes de venir",
-                "Llega con unos minutos de margen para que podamos mantener la agenda al dia."
+                "Te recomendamos llegar con unos minutos de margen para mantener la agenda puntual."
             );
         }
-        if (text.contains("nuevo anuncio")) {
+        if (text.contains("nuevo comunicado") || text.contains("nuevo anuncio")) {
             return new EmailView(
-                "Hay una novedad publicada en Harmony Studio.",
-                "Nuevo anuncio",
-                "Anuncio",
+                "Hemos publicado una novedad para clientes de Harmony Studio.",
+                "Nuevo comunicado",
+                "Comunicado",
                 "#d99b2b",
                 "#fff5df",
                 "#9a6700",
-                "Consulta el anuncio",
-                "Revisa la pagina principal de la aplicacion para ver la informacion completa."
+                "Informacion para clientes",
+                "Consulta la pagina principal de la aplicacion para ver el comunicado completo."
             );
         }
-        if (text.contains("hueco") || text.contains("disponible")) {
+        if (text.contains("hueco") || text.contains("disponible") || text.contains("franja de agenda")) {
             return new EmailView(
-                "Se ha liberado una franja en la agenda.",
-                "Hueco disponible",
+                "Se ha liberado una franja de agenda.",
+                "Nueva hora disponible",
                 "Disponibilidad",
                 "#16a34a",
                 "#eaf8ef",
                 "#15803d",
-                "Reserva cuanto antes",
-                "El hueco se asignara al primer cliente que complete la reserva mientras siga disponible."
+                "Disponibilidad limitada",
+                "La franja se asignara al primer cliente que complete la reserva mientras siga disponible."
             );
         }
         if (text.contains("solicitud de registro")) {
@@ -190,7 +190,7 @@ public class EmailSenderService {
                 "#f1eaff",
                 "#6d28d9",
                 "Siguiente paso",
-                "Entra en el panel de administracion para aprobar o rechazar la solicitud cuando la revises."
+                "Revisa la solicitud desde el panel y apruebala o rechazala cuando hayas comprobado los datos."
             );
         }
         if (text.contains("bloqueada") || text.contains("no presentarte")) {
@@ -202,7 +202,7 @@ public class EmailSenderService {
                 "#fee2e2",
                 "#991b1b",
                 "Importante",
-                "Contacta con tu barberia para aclarar la situacion y revisar los siguientes pasos."
+                "Contacta con Harmony Studio para aclarar la situacion y revisar los siguientes pasos."
             );
         }
         if (text.contains("nueva reserva pendiente")) {
@@ -214,10 +214,10 @@ public class EmailSenderService {
                 "#fff5df",
                 "#9a6700",
                 "Gestion de agenda",
-                "Revisa la reserva desde tu panel para mantener la agenda actualizada."
+                "Revisa los datos desde tu panel para mantener la agenda organizada."
             );
         }
-        if (text.contains("cita ha sido asignada") || text.contains("cita asignada")) {
+        if (text.contains("cita ha sido asignada") || text.contains("cita asignada") || text.contains("ya tiene hora asignada")) {
             return new EmailView(
                 "Ya se ha asignado una hora para la cita.",
                 "Cita asignada",
@@ -226,19 +226,19 @@ public class EmailSenderService {
                 "#fff5df",
                 "#9a6700",
                 "Gestion de la cita",
-                "Conserva este correo como referencia y revisa la aplicacion si necesitas consultar el estado de la cita."
+                "Conserva este correo como referencia y revisa la aplicacion si necesitas consultar la cita."
             );
         }
-        if (text.contains("reserva ha sido creada")) {
+        if (text.contains("reserva") && text.contains("ha sido creada")) {
             return new EmailView(
-                "Estos son los datos de la cita registrada.",
+                "Tu cita se ha registrado correctamente.",
                 "Reserva confirmada",
                 "Reserva",
                 "#d99b2b",
                 "#fff5df",
                 "#9a6700",
                 "Gestion de la cita",
-                "Conserva este correo como justificante y revisa la aplicacion si necesitas consultar el estado de la reserva."
+                "Conserva este correo como justificante y revisa la aplicacion si necesitas consultar o gestionar la reserva."
             );
         }
         return new EmailView(
