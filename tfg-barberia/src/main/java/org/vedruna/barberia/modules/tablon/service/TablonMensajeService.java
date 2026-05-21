@@ -77,7 +77,7 @@ public class TablonMensajeService {
         entity.setActivo(true);
 
         TablonMensaje saved = tablonMensajeRepository.save(entity);
-        notifyClientsBoardUpdated(actor, saved.getTitulo(), "creado");
+        notifyClientsAboutNewBoardAnnouncement(actor, saved);
         return converter.toDto(saved);
     }
 
@@ -105,7 +105,6 @@ public class TablonMensajeService {
         entity.setAutor(actor);
 
         TablonMensaje saved = tablonMensajeRepository.save(entity);
-        notifyClientsBoardUpdated(actor, saved.getTitulo(), "actualizado");
         return converter.toDto(saved);
     }
 
@@ -125,7 +124,6 @@ public class TablonMensajeService {
 
         entity.setActivo(false);
         tablonMensajeRepository.save(entity);
-        notifyClientsBoardUpdated(actor, entity.getTitulo(), "eliminado");
     }
 
     /**
@@ -143,7 +141,7 @@ public class TablonMensajeService {
     /**
      * Notifica por email a todos los clientes activos.
      */
-    private void notifyClientsBoardUpdated(Usuario actor, String title, String action) {
+    private void notifyClientsAboutNewBoardAnnouncement(Usuario actor, TablonMensaje announcement) {
         List<Usuario> activeClients = usuarioRepository.findByRolInAndActivoTrue(List.of(RolUsuario.CLIENTE));
         if (activeClients.isEmpty()) {
             return;
@@ -152,14 +150,13 @@ public class TablonMensajeService {
         String actorName = actor.getNombre() == null || actor.getNombre().isBlank() ? actor.getEmail() : actor.getNombre();
         String now = LocalDateTime.now().format(BOARD_DATE_FORMAT);
         String message = String.format(
-            "El tablon de informacion se ha %s.\n\nTitulo: %s\nActualizado por: %s\nFecha: %s",
-            action,
-            title,
+            "Hay un nuevo anuncio disponible para los clientes de Harmony Studio.\n\nTitulo: %s\nPublicado por: %s\nFecha de publicacion: %s\n\nPuedes consultarlo desde la pagina principal de la aplicacion.",
+            announcement.getTitulo(),
             actorName,
             now
         );
 
         activeClients.forEach(client -> notificacionService.createSystemInfoAlways(client, message));
-        log.info("Board update notified clients={} action={} title={}", activeClients.size(), action, title);
+        log.info("New board announcement notified clients={} title={}", activeClients.size(), announcement.getTitulo());
     }
 }
