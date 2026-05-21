@@ -9,7 +9,11 @@ import { premiumCardClass } from "../../styles/uiClasses";
  */
 function formatDateTime(value) {
   if (!value) return "-";
-  return new Date(value).toLocaleString("es-ES");
+  const rawValue = String(value);
+  const normalizedValue = /(?:Z|[+-]\d{2}:?\d{2})$/.test(rawValue) ? rawValue : `${rawValue}Z`;
+  return new Date(normalizedValue).toLocaleString("es-ES", {
+    timeZone: "Europe/Madrid",
+  });
 }
 
 /**
