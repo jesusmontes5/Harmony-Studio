@@ -440,6 +440,21 @@ git pull
 sudo docker compose up --build -d
 ```
 
+Desde Windows tambien se puede automatizar el flujo con los scripts de la carpeta `scripts`:
+
+```text
+scripts/git-develop.bat       -> sube los cambios solo a develop
+scripts/git-release-main.bat  -> sube a develop, fusiona en main y empuja main
+scripts/azure-refresh.bat     -> actualiza la VM de Azure desde main y reconstruye Docker
+```
+
+Si se quiere indicar un mensaje de commit concreto:
+
+```powershell
+.\scripts\git-release-main.ps1 "Mejora correos del sistema"
+.\scripts\azure-refresh.ps1
+```
+
 Ver logs:
 
 ```bash
