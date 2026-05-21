@@ -193,6 +193,9 @@ public class NotificacionService {
      */
     private String buildInfoSubject(String mensaje) {
         String text = mensaje == null ? "" : mensaje.toLowerCase();
+        if (text.contains("nuevo anuncio")) {
+            return "Harmony Studio - Nuevo anuncio";
+        }
         if (text.contains("hueco") || text.contains("disponible")) {
             return "Harmony Studio - Hueco disponible";
         }

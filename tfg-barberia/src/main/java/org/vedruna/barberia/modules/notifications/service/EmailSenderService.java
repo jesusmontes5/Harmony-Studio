@@ -157,6 +157,18 @@ public class EmailSenderService {
                 "Llega con unos minutos de margen para que podamos mantener la agenda al dia."
             );
         }
+        if (text.contains("nuevo anuncio")) {
+            return new EmailView(
+                "Hay una novedad publicada en Harmony Studio.",
+                "Nuevo anuncio",
+                "Anuncio",
+                "#d99b2b",
+                "#fff5df",
+                "#9a6700",
+                "Consulta el anuncio",
+                "Revisa la pagina principal de la aplicacion para ver la informacion completa."
+            );
+        }
         if (text.contains("hueco") || text.contains("disponible")) {
             return new EmailView(
                 "Se ha liberado una franja en la agenda.",
