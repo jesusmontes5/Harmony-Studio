@@ -1,6 +1,8 @@
 import { AnimatePresence, LazyMotion, domAnimation, m } from "framer-motion";
 import { useLocation } from "react-router-dom";
 
+const MotionMain = m.main;
+
 const pageTransition = {
   duration: 0.3,
   ease: "easeOut",
@@ -35,7 +37,7 @@ export function PageTransition({ children, className = "" }) {
   return (
     <LazyMotion features={domAnimation}>
       <AnimatePresence mode="wait" initial={false}>
-        <m.main
+        <MotionMain
           key={location.pathname}
           className={className}
           variants={pageVariants}
@@ -44,7 +46,7 @@ export function PageTransition({ children, className = "" }) {
           exit="exit"
         >
           {children}
-        </m.main>
+        </MotionMain>
       </AnimatePresence>
     </LazyMotion>
   );

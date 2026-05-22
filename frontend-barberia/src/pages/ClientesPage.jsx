@@ -159,6 +159,8 @@ export function ClientesPage() {
   const [error, setError] = useState("");
   const [feedback, setFeedback] = useState("");
   const [processingId, setProcessingId] = useState(null);
+  const [rejectTarget, setRejectTarget] = useState(null);
+  const [rejectReason, setRejectReason] = useState("Datos incompletos");
   const [blockTarget, setBlockTarget] = useState(null);
   const [scheduleClient, setScheduleClient] = useState(null);
   const [scheduleForm, setScheduleForm] = useState({
@@ -241,15 +243,27 @@ export function ClientesPage() {
    * Rechaza una solicitud de registro pendiente.
    */
   const handleReject = async (requestId) => {
-    const motivo = window.prompt("Motivo de rechazo:", "Datos incompletos")?.trim();
+    const request = pendingRequests.find((item) => item.id === requestId);
+    setRejectTarget(request || { id: requestId });
+    setRejectReason("Datos incompletos");
+  };
+
+  /**
+   * Confirma el rechazo desde el modal visual de la aplicacion.
+   */
+  const confirmReject = async () => {
+    if (!rejectTarget?.id) return;
+
+    const motivo = rejectReason.trim();
     if (!motivo) return;
 
-    setProcessingId(requestId);
+    setProcessingId(rejectTarget.id);
     setError("");
     setFeedback("");
     try {
-      await rejectRegistrationRequest(requestId, motivo);
+      await rejectRegistrationRequest(rejectTarget.id, motivo);
       setFeedback("Solicitud rechazada.");
+      setRejectTarget(null);
       await loadData(q);
     } catch (err) {
       setError(mapApiError(err).message);
@@ -385,6 +399,54 @@ export function ClientesPage() {
 
         {error ? <Alert tone="error">{error}</Alert> : null}
         {feedback ? <Alert tone="success">{feedback}</Alert> : null}
+
+        <Modal
+          open={Boolean(rejectTarget)}
+          title="Rechazar solicitud"
+          onClose={() => (processingId ? null : setRejectTarget(null))}
+          footer={
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setRejectTarget(null)}
+                disabled={Boolean(processingId)}
+                className={`min-h-12 w-full px-7 sm:w-auto ${premiumSecondaryButtonClass}`}
+              >
+                Cancelar
+              </Button>
+              <DangerButton
+                type="button"
+                loading={processingId === rejectTarget?.id}
+                onClick={confirmReject}
+                className="min-h-12 px-8 text-xs sm:w-auto"
+              >
+                Rechazar
+              </DangerButton>
+            </div>
+          }
+        >
+          <div className="space-y-6">
+            <Alert tone="warning">
+              La solicitud pasara a estado rechazada y no se creara una cuenta para este cliente.
+            </Alert>
+            <div className="rounded-[1.35rem] border border-accent/15 bg-white/82 p-5 shadow-[0_18px_45px_-36px_rgba(17,24,39,0.45)]">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">Solicitud seleccionada</p>
+              <p className="mt-2 font-display text-2xl font-bold text-primary">{rejectTarget?.nombre || "Solicitud"}</p>
+              {rejectTarget?.email ? <p className="mt-2 text-sm font-medium text-neutral-text/70">{rejectTarget.email}</p> : null}
+            </div>
+            <Input
+              id="rejectReason"
+              label="Motivo de rechazo"
+              as="textarea"
+              value={rejectReason}
+              onChange={(event) => setRejectReason(event.target.value)}
+              placeholder="Ej: Datos incompletos"
+              maxLength={255}
+              inputClassName="min-h-28 rounded-2xl border-neutral-border/80 bg-white/95 px-lg shadow-[0_18px_42px_-32px_rgba(17,24,39,0.62)] placeholder:text-neutral-text/45 transition-all duration-200 hover:border-accent/40 hover:shadow-[0_20px_46px_-34px_rgba(17,24,39,0.68)] focus:border-accent focus:ring-accent/30"
+            />
+          </div>
+        </Modal>
 
         <Modal
           open={Boolean(scheduleClient)}

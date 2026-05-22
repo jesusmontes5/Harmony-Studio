@@ -22,6 +22,20 @@ http://localhost:4321
 npm run build
 ```
 
+## Refrescar Azure
+
+Cuando `main` ya esta actualizado en GitHub, el backend de la VM puede reconstruirse con:
+
+```powershell
+.\scripts\azure-refresh.ps1
+```
+
+Tambien existe el acceso directo:
+
+```text
+scripts/azure-refresh.bat
+```
+
 ## Despliegue de la aplicacion
 
 La aplicacion principal esta desplegada con frontend en Vercel y backend en Azure:
