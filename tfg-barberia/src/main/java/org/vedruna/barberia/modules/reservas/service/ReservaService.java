@@ -621,7 +621,7 @@ public class ReservaService {
         if (!Boolean.TRUE.equals(cliente.getActivo())) {
             return;
         }
-        usuarioService.blockClient(actor, cliente.getId());
+        usuarioService.blockClient(actor, cliente.getId(), false);
         notificacionService.createInfo(cliente, reserva, NO_SHOW_BLOCK_MESSAGE);
     }
 
