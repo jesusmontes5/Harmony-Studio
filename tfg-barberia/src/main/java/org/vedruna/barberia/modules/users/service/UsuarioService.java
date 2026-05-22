@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.vedruna.barberia.modules.notifications.repository.NotificacionRepository;
+import org.vedruna.barberia.modules.notifications.service.NotificacionService;
 import org.vedruna.barberia.modules.registration.repository.SolicitudRegistroRepository;
 import org.vedruna.barberia.modules.reviews.repository.ResenaRepository;
 import org.vedruna.barberia.modules.reservas.repository.ReservaRepository;
@@ -42,6 +43,9 @@ public class UsuarioService {
 
     /** Converter de usuarios a DTO publico. */
     private final UsuarioConverter usuarioConverter;
+
+    /** Servicio de notificaciones persistidas y email. */
+    private final NotificacionService notificacionService;
 
     /** Repositorio de notificaciones. */
     private final NotificacionRepository notificacionRepository;
@@ -169,6 +173,14 @@ public class UsuarioService {
      */
     @Transactional
     public UsuarioPublicDto blockClient(Usuario actor, Long clientId) {
+        return blockClient(actor, clientId, true);
+    }
+
+    /**
+     * Bloquea un cliente permitiendo decidir si se notifica el bloqueo general.
+     */
+    @Transactional
+    public UsuarioPublicDto blockClient(Usuario actor, Long clientId, boolean notifyClient) {
         assertReviewerRole(actor);
         Usuario client = getClientEntity(clientId);
         if (!Boolean.TRUE.equals(client.getActivo())) {
@@ -176,6 +188,14 @@ public class UsuarioService {
         }
         client.setActivo(false);
         Usuario saved = usuarioRepository.save(client);
+        if (notifyClient) {
+            notificacionService.createSystemInfo(
+                saved,
+                "Tu cuenta ha sido bloqueada temporalmente en Harmony Studio.\n\n"
+                    + "A partir de este momento no podras realizar nuevas reservas ni gestionar citas desde la aplicacion.\n\n"
+                    + "Si crees que se trata de un error o necesitas revisar tu caso, contacta con Harmony Studio."
+            );
+        }
         return usuarioConverter.toPublicDto(saved);
     }
 

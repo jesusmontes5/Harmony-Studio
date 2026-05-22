@@ -159,6 +159,7 @@ export function ClientesPage() {
   const [error, setError] = useState("");
   const [feedback, setFeedback] = useState("");
   const [processingId, setProcessingId] = useState(null);
+  const [blockTarget, setBlockTarget] = useState(null);
   const [scheduleClient, setScheduleClient] = useState(null);
   const [scheduleForm, setScheduleForm] = useState({
     fecha: "",
@@ -261,15 +262,24 @@ export function ClientesPage() {
    * Bloquea un cliente activo.
    */
   const handleBlockClient = async (clientId) => {
-    const confirmed = window.confirm("Seguro que quieres bloquear a este cliente?");
-    if (!confirmed) return;
+    const client = activeClients.find((item) => item.id === clientId);
+    setBlockTarget(client || { id: clientId });
+  };
 
+  /**
+   * Confirma el bloqueo desde el modal visual de la aplicacion.
+   */
+  const confirmBlockClient = async () => {
+    if (!blockTarget?.id) return;
+
+    const clientId = blockTarget.id;
     setProcessingId(clientId);
     setError("");
     setFeedback("");
     try {
       await blockClient(clientId);
       setFeedback("Cliente bloqueado correctamente.");
+      setBlockTarget(null);
       await loadData(q);
     } catch (err) {
       setError(mapApiError(err).message);
@@ -454,6 +464,47 @@ export function ClientesPage() {
               maxLength={255}
               inputClassName="min-h-28 rounded-2xl border-neutral-border/80 bg-white/95 px-lg shadow-[0_18px_42px_-32px_rgba(17,24,39,0.62)] placeholder:text-neutral-text/45 transition-all duration-200 hover:border-accent/40 hover:shadow-[0_20px_46px_-34px_rgba(17,24,39,0.68)] focus:border-accent focus:ring-accent/30"
             />
+          </div>
+        </Modal>
+
+        <Modal
+          open={Boolean(blockTarget)}
+          title="Bloquear cliente"
+          onClose={() => (processingId ? null : setBlockTarget(null))}
+          footer={
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setBlockTarget(null)}
+                disabled={Boolean(processingId)}
+                className={`min-h-12 w-full px-7 sm:w-auto ${premiumSecondaryButtonClass}`}
+              >
+                Cancelar
+              </Button>
+              <DangerButton
+                type="button"
+                loading={processingId === blockTarget?.id}
+                onClick={confirmBlockClient}
+                className="min-h-12 px-8 text-xs sm:w-auto"
+              >
+                Bloquear
+              </DangerButton>
+            </div>
+          }
+        >
+          <div className="space-y-5">
+            <Alert tone="warning">
+              El cliente no podra realizar nuevas reservas ni gestionar citas mientras permanezca bloqueado.
+            </Alert>
+            <div className="rounded-[1.35rem] border border-accent/15 bg-white/82 p-5 shadow-[0_18px_45px_-36px_rgba(17,24,39,0.45)]">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">Cliente seleccionado</p>
+              <p className="mt-2 font-display text-2xl font-bold text-primary">{blockTarget?.nombre || "Cliente"}</p>
+              {blockTarget?.email ? <p className="mt-2 text-sm font-medium text-neutral-text/70">{blockTarget.email}</p> : null}
+            </div>
+            <p className="text-sm leading-relaxed text-neutral-text/70">
+              Se enviara un aviso al cliente indicando que su cuenta ha sido bloqueada temporalmente y que debe contactar con Harmony Studio para revisar su caso.
+            </p>
           </div>
         </Modal>
 
