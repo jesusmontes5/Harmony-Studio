@@ -14,6 +14,9 @@ FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
+ENV TZ=Europe/Madrid
+ENV JAVA_TOOL_OPTIONS="-Duser.timezone=Europe/Madrid"
+
 COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
