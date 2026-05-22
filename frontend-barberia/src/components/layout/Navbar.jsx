@@ -4,6 +4,9 @@ import { useAuth } from "../../hooks/useAuth";
 import { cn } from "../../utils/cn";
 import { Button } from "../ui/Button";
 
+/**
+ * Enlace de navegacion de escritorio con estado activo de React Router.
+ */
 function NavItem({ to, children, onClick }) {
   return (
     <NavLink
@@ -23,6 +26,9 @@ function NavItem({ to, children, onClick }) {
   );
 }
 
+/**
+ * Enlace del menu movil con animacion escalonada al abrir/cerrar.
+ */
 function MobileNavItem({ to, children, onClick, index, open }) {
   return (
     <NavLink
@@ -30,7 +36,7 @@ function MobileNavItem({ to, children, onClick, index, open }) {
       end={to === "/"}
       onClick={onClick}
       style={{ transitionDelay: open ? `${90 + index * 45}ms` : "0ms" }}
-       className={({ isActive }) =>
+      className={({ isActive }) =>
         cn(
           "group relative flex h-11 items-center rounded-xl px-md text-xs font-extrabold uppercase tracking-[0.04em] transition-all duration-[360ms] ease-[cubic-bezier(0.22,1,0.36,1)] focus:outline-none focus-visible:outline-none",
           open ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0",
@@ -53,6 +59,9 @@ function MobileNavItem({ to, children, onClick, index, open }) {
   );
 }
 
+/**
+ * Calcula iniciales para mostrar un avatar textual cuando no hay imagen.
+ */
 function getInitials(user) {
   const source = user?.nombre || user?.email || "US";
   return source
@@ -63,6 +72,9 @@ function getInitials(user) {
     .toUpperCase();
 }
 
+/**
+ * Renderiza la foto de perfil o sus iniciales manteniendo el mismo estilo visual.
+ */
 function UserAvatar({ user, className = "h-8 w-8 text-xs" }) {
   const initials = getInitials(user);
   const avatarUrl = user?.avatarUrl;
@@ -90,6 +102,9 @@ function UserAvatar({ user, className = "h-8 w-8 text-xs" }) {
   );
 }
 
+/**
+ * Icono de usuario usado en el desplegable de perfil.
+ */
 function UserIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
@@ -99,6 +114,9 @@ function UserIcon() {
   );
 }
 
+/**
+ * Icono animado que alterna entre hamburguesa y cierre en mobile.
+ */
 function MenuIcon({ open }) {
   return (
     <svg
@@ -133,6 +151,9 @@ function MenuIcon({ open }) {
   );
 }
 
+/**
+ * Barra superior responsive. Construye enlaces segun autenticacion y rol.
+ */
 export function Navbar() {
   const { isAuthenticated, user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -156,6 +177,9 @@ export function Navbar() {
   useEffect(() => {
     if (!mobileOpen && !menuOpen) return undefined;
 
+    /**
+     * Cierra menus cuando el usuario pulsa fuera de la barra.
+     */
     const handlePointerDown = (event) => {
       if (!shellRef.current?.contains(event.target)) {
         setMobileOpen(false);
@@ -163,6 +187,9 @@ export function Navbar() {
       }
     };
 
+    /**
+     * Permite cerrar menus con Escape para mejorar accesibilidad.
+     */
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         setMobileOpen(false);

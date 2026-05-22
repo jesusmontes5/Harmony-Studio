@@ -8,10 +8,19 @@ import { NotificationProvider } from "./context/NotificationContext";
 import { ScrollToTop } from "./components/ScrollToTop";
 import "./index.css";
 
+/**
+ * Evita que el navegador restaure scroll entre rutas SPA.
+ */
 window.history.scrollRestoration = "manual";
 
+/**
+ * Client ID publico usado por el proveedor OAuth de Google en frontend.
+ */
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 
+/**
+ * Punto de entrada React. Registra providers globales antes de renderizar la app.
+ */
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <GoogleOAuthProvider clientId={googleClientId}>

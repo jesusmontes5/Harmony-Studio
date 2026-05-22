@@ -361,6 +361,9 @@ public class EmailSenderService {
             .replace("'", "&#39;");
     }
 
+    /**
+     * Configuracion visual y textual aplicada a una familia de correos.
+     */
     private record EmailView(
         String preheader,
         String title,
@@ -373,6 +376,9 @@ public class EmailSenderService {
     ) {
     }
 
+    /**
+     * Resultado de dividir el cuerpo del correo en introduccion, detalles y cierre.
+     */
     private record ParsedBody(
         List<String> introLines,
         List<DetailRow> detailRows,
@@ -380,6 +386,9 @@ public class EmailSenderService {
     ) {
     }
 
+    /**
+     * Fila clave-valor que se renderiza dentro de la tarjeta de detalles del correo.
+     */
     private record DetailRow(String label, String value) {
     }
 }
