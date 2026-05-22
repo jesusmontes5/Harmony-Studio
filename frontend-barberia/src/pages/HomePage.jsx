@@ -51,7 +51,6 @@ export function HomePage() {
     form,
     isEditing,
     setForm,
-    loadBoard,
     startEdit,
     submit,
     remove,

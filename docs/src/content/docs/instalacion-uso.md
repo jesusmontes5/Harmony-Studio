@@ -147,6 +147,18 @@ git pull
 sudo docker compose up --build -d
 ```
 
+Desde Windows, si `main` ya esta actualizado en GitHub, se puede automatizar el refresco de la VM con:
+
+```powershell
+.\scripts\azure-refresh.ps1
+```
+
+Tambien se puede ejecutar con doble clic el archivo:
+
+```text
+scripts/azure-refresh.bat
+```
+
 Comprobaciones:
 
 ```bash
