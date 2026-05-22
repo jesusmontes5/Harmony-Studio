@@ -98,6 +98,13 @@ function isReservationStartSlot(reserva, fecha, slotTime) {
 }
 
 /**
+ * Comprueba si un slot horario ya ha pasado respecto a la hora local actual.
+ */
+function isPastSlot(fecha, slotTime) {
+  return new Date(`${fecha}T${slotTime}`) < new Date();
+}
+
+/**
  * Asocia estados de reserva con colores semanticos de interfaz.
  */
 function getEstadoTone(estado) {
@@ -252,6 +259,10 @@ export function GestionReservasPage({ embedded = false, controlledFecha, onFecha
     ]);
     return Object.fromEntries(entries);
   }, [agenda.horarios, fecha, pendingTimeReservations, timedReservations]);
+  const visibleSlots = useMemo(
+    () => slots.filter((slot) => findReservationForSlot(timedReservations, fecha, slot) || !isPastSlot(fecha, slot)),
+    [fecha, slots, timedReservations]
+  );
 
   /**
    * Cambia el estado de una reserva usando el payload final.
@@ -389,6 +400,16 @@ export function GestionReservasPage({ embedded = false, controlledFecha, onFecha
             </div>
           ) : null}
 
+          {!loading && !error && slots.length > 0 && visibleSlots.length === 0 ? (
+            <div className="rounded-[1.5rem] border border-accent/15 bg-gradient-to-br from-white via-white to-accent/5 p-2 shadow-[0_18px_45px_-36px_rgba(17,24,39,0.45)] animate-fade-up">
+              <EmptyState
+                title="Sin tramos futuros"
+                description="Los huecos libres de esta jornada ya han pasado."
+                icon=""
+              />
+            </div>
+          ) : null}
+
           {!loading && !error && pendingTimeReservations.length > 0 ? (
             <section className="rounded-[1.5rem] border border-accent/15 bg-gradient-to-br from-white via-white to-accent/5 p-5 shadow-[0_18px_45px_-36px_rgba(17,24,39,0.5)] animate-fade-up sm:p-6">
               <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
@@ -466,9 +487,9 @@ export function GestionReservasPage({ embedded = false, controlledFecha, onFecha
             </section>
           ) : null}
 
-          {!loading && !error && slots.length > 0 ? (
+          {!loading && !error && visibleSlots.length > 0 ? (
             <ul className="grid gap-4">
-              {slots.map((slot, idx) => {
+              {visibleSlots.map((slot, idx) => {
                 const reserva = findReservationForSlot(timedReservations, fecha, slot);
                 return (
                   <li 
