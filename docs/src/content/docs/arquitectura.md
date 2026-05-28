@@ -26,7 +26,7 @@ Rutas principales:
 - `/dashboard` Redireccion historica a `/panel`
 - `/mi-horario` Horario y agenda
 - `/gestion-reservas` Redireccion historica a `/mi-horario`
-- `/mis-resenas` Resenas
+- `/mis-resenas` Reseñas
 - `/clientes` Clientes y solicitudes
 - `/gestion-servicios` Servicios
 
@@ -40,7 +40,7 @@ El backend organiza la logica por modulos:
 - `availability`: calculo de huecos disponibles.
 - `schedule`: horarios concretos por fecha y agenda diaria.
 - `servicios`: servicios ofrecidos por la barberia.
-- `reviews`: resenas de clientes.
+- `reviews`: reseñas de clientes.
 - `registration`: aprobacion o rechazo de solicitudes.
 - `notifications`: notificaciones pendientes.
 - `tablon`: mensajes visibles en el inicio.

@@ -593,14 +593,6 @@ Harmony Studio cumple el objetivo de crear una aplicación web completa para una
 
 El proyecto integra funcionalidades reales de negocio: reservas, horarios, clientes, servicios, reseñas, autenticación, roles y administración. Además, se ha trabajado una identidad visual premium para que la experiencia no sea solo funcional, sino también coherente con una marca moderna.
 
-Como mejoras futuras se plantean:
-
-- Añadir tests unitarios y de integración más completos.
-- Automatizar despliegue con GitHub Actions.
-- Desplegar públicamente la documentación Starlight.
-- Mejorar el sistema de notificaciones y recordatorios.
-- Añadir monitorización y métricas de producción.
-
 ---
 
 ## Contribuciones, agradecimientos y referencias
@@ -608,10 +600,6 @@ Como mejoras futuras se plantean:
 ### Contribuciones
 
 Proyecto desarrollado como Trabajo Final de Desarrollo de Aplicaciones Web.
-
-### Agradecimientos
-
-Agradecimiento al profesorado del ciclo DAW por la orientación durante el desarrollo del proyecto.
 
 ### Referencias
 

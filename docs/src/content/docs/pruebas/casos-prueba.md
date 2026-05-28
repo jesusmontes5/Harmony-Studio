@@ -26,7 +26,7 @@ Esta tabla recoge pruebas funcionales que cubren los flujos principales de Harmo
 | CP-15 | Publicar mensaje en tablon | Barbero/Admin | Usuario autenticado | Crear aviso desde inicio | Mensaje aparece en el tablon informativo |
 | CP-16 | Eliminar mensaje del tablon | Barbero/Admin | Mensaje existente | Pulsar eliminar y confirmar | Mensaje desaparece del tablon |
 | CP-17 | Crear resena | Cliente | Reserva completada sin resena previa | Enviar puntuacion y comentario | Resena queda asociada a reserva y barbero |
-| CP-18 | Eliminar cuenta | Cliente | Usuario autenticado | Confirmar eliminacion desde perfil | Cuenta queda eliminada y sus resenas historicas se conservan anonimizadas si procede |
+| CP-18 | Eliminar cuenta | Cliente | Usuario autenticado | Confirmar eliminacion desde perfil | Cuenta queda eliminada y sus reseñas historicas se conservan anonimizadas si procede |
 
 ## Pruebas tecnicas recomendadas
 

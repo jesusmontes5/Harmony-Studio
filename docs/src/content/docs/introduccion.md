@@ -5,7 +5,7 @@ description: Descripcion, justificacion, objetivos y alcance de Harmony Studio.
 
 # Introduccion
 
-Harmony Studio es una aplicacion web para digitalizar la gestion diaria de una barberia. El sistema permite a los clientes solicitar acceso, iniciar sesion, reservar citas segun la disponibilidad real y consultar su historial. El barbero dispone de un panel privado para configurar horarios, gestionar reservas, revisar clientes, administrar servicios y consultar resenas.
+Harmony Studio es una aplicacion web para digitalizar la gestion diaria de una barberia. El sistema permite a los clientes solicitar acceso, iniciar sesion, reservar citas segun la disponibilidad real y consultar su historial. El barbero dispone de un panel privado para configurar horarios, gestionar reservas, revisar clientes, administrar servicios y consultar reseñas.
 
 ## Justificacion
 
@@ -22,4 +22,4 @@ Muchos pequenos negocios gestionan sus citas mediante mensajes, llamadas o agend
 
 ## Alcance funcional
 
-El proyecto cubre registro, login, Google OAuth, perfil, reservas, agenda, horarios, servicios, clientes inactivos por bloqueo, solicitudes de registro, tablero informativo, notificaciones y resenas.
+El proyecto cubre registro, login, Google OAuth, perfil, reservas, agenda, horarios, servicios, clientes inactivos por bloqueo, solicitudes de registro, tablero informativo, notificaciones y reseñas.
