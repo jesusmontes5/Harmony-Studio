@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { GoogleLogin } from "@react-oauth/google";
+import { GoogleAuthButton } from "../components/auth/GoogleAuthButton";
 import { AuthShell } from "../components/auth/AuthShell";
 import { useAuth } from "../hooks/useAuth";
 import { Alert } from "../components/ui/Alert";
@@ -235,16 +235,7 @@ export function LoginPage() {
               </span>
             </div>
 
-            <div className="w-full overflow-hidden rounded-xl border border-neutral-border/80 bg-white transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-soft">
-              <GoogleLogin
-                onSuccess={onGoogleSuccess}
-                onError={onGoogleError}
-                text="continue_with"
-                theme="outline"
-                shape="rectangular"
-                width="100%"
-              />
-            </div>
+            <GoogleAuthButton onSuccess={onGoogleSuccess} onError={onGoogleError} text="continue_with" />
           </>
         ) : (
           <div className="rounded-xl border border-accent/30 bg-accent/10 px-lg py-md text-xs font-medium text-primary">
