@@ -51,7 +51,7 @@ import Mermaid from "../../../components/Mermaid.astro";
 - Proxy principal: Vercel reenvia `/api/*` hacia la VM de Azure.
 - Proxy alternativo: Nginx reenvia `/api` al contenedor `service:8080`.
 - Base de datos: Azure Database for MySQL Flexible Server con esquema `schema.sql`.
-- Documentacion: sitio Starlight desplegable como aplicacion estatica.
+- Documentacion: sitio Starlight desplegado en Vercel como aplicacion estatica.
 - Servicios externos: Google OAuth, SMTP opcional y Cloudinary para avatar.
 
 Recursos actuales:
@@ -60,6 +60,7 @@ Recursos actuales:
 - Region: `spaincentral`.
 - VM: `vm-harmony-studio`.
 - Frontend publico: `https://harmony-studio-ivory.vercel.app/`.
+- Documentacion Starlight: `https://harmony-studio-docs.vercel.app/`.
 - Frontend alternativo en Azure: `http://158.158.2.243/`.
 - API mediante Vercel: `https://harmony-studio-ivory.vercel.app/api`.
 - MySQL: `mysql-harmony-studio.mysql.database.azure.com`.

@@ -84,6 +84,12 @@ Documentacion local:
 http://localhost:4321
 ```
 
+Documentacion desplegada:
+
+```text
+https://harmony-studio-docs.vercel.app/
+```
+
 ## Despliegue en produccion
 
 El despliegue de produccion usa Vercel para el frontend publico y Docker Compose en una maquina virtual de Azure para el backend. La base de datos se ejecuta como Azure Database for MySQL Flexible Server.
