@@ -314,6 +314,12 @@ Documentación local:
 http://localhost:4321
 ```
 
+Documentación desplegada:
+
+```text
+https://harmony-studio-docs.vercel.app/
+```
+
 ### 6. Generar build de producción
 
 Frontend:
@@ -537,6 +543,12 @@ tfg-barberia/request.http
 
 La documentación técnica del proyecto está en la carpeta `docs/` y contiene la portada, arquitectura, diagramas UML/ER, despliegue y casos de prueba.
 
+También está desplegada públicamente en:
+
+```text
+https://harmony-studio-docs.vercel.app/
+```
+
 ```bash
 cd docs
 npm install
@@ -556,7 +568,7 @@ http://localhost:4321
 - Repositorio: https://github.com/jesusmontes5/Harmony-Studio
 - Proyecto desplegado: `https://harmony-studio-ivory.vercel.app/`
 - Frontend alternativo en Azure: `http://158.158.2.243/`
-- Documentación Starlight: incluida en `docs/`
+- Documentación Starlight: `https://harmony-studio-docs.vercel.app/`
 - Figma de la interfaz: https://www.figma.com/design/zjuhzeH3yg0EYXkDpIPaqe/TFG-Barberia?node-id=0-1&t=SqV60CRjlqtlAzrw-1
 - Swagger local: `http://localhost:8080/swagger-ui.html`
 - Health check desplegado: `https://harmony-studio-ivory.vercel.app/api/actuator/health`
@@ -579,7 +591,7 @@ La documentación técnica ampliada está realizada en Starlight e incluye:
 Estado actual:
 
 - README principal: incluido en este documento.
-- Documentación Starlight: incluida en `docs/`.
+- Documentación Starlight: incluida en `docs/` y desplegada en `https://harmony-studio-docs.vercel.app/`.
 - Swagger/OpenAPI: implementado en backend.
 - Esquema SQL: disponible en `tfg-barberia/src/main/resources/db/mysql/schema.sql`.
 - Casos de prueba: documentados en `docs/src/content/docs/pruebas/casos-prueba.md`.

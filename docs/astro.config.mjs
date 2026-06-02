@@ -2,7 +2,7 @@ import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 
 export default defineConfig({
-  site: "https://harmony-studio-ivory.vercel.app",
+  site: "https://harmony-studio-docs.vercel.app",
   integrations: [
     starlight({
       title: "Harmony Studio",
